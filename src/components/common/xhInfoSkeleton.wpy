@@ -1,0 +1,42 @@
+<style lang="less">
+.skeleton-info-box {
+  padding: 44rpx;
+  view {
+    margin-bottom: 20rpx;
+  }
+  .item1 {
+    width: 60%;
+    height: 50rpx;
+    background: #f0f0f0;
+  }
+  .item2 {
+    width: 91%;
+    height: 50rpx;
+    background: #f0f0f0;
+  }
+  .item3 {
+    width: 100%;
+    height: 300rpx;
+    background: #f0f0f0;
+  }
+}
+</style>
+<!-- 香哈详情页骨架屏 -->
+<template>
+<view class="skeleton-info-box">
+  <view class="item1"></view>
+  <view class="item2"></view>
+  <view class="item3"></view>
+</view>
+</template>
+<script>
+import wepy from "wepy";
+export default class XhInfoSkeleton extends wepy.component {
+  props = {};
+  data = {};
+
+  onLoad() {}
+
+  methods = {};
+}
+</script>

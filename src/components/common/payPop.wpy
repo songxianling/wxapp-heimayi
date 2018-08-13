@@ -1,0 +1,270 @@
+<style lang="less">
+.pay-pop-show .pay-box {
+  display: block;
+  height: 100vh;
+}
+.pay-box {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1002;
+  background: rgba(0, 0, 0, 0.55);
+  display: none;
+}
+.pay-con {
+  position: fixed;
+  bottom: 0;
+  width: 750rpx;
+  height: 620rpx;
+  background: white;
+  transform: translateY(150%);
+  transition: all 0.4s ease;
+  z-index: 1003;
+  .close-btn {
+    display: block;
+    width: 29rpx;
+    height: 29rpx;
+    padding: 34rpx;
+  }
+  .title {
+    margin-top: -6rpx;
+    padding: 0 30rpx;
+    font-size: 36rpx;
+    font-weight: 300;
+    text-align: center;
+  }
+  .title2 {
+    margin-top: 10rpx;
+    font-size: 26rpx;
+    color: #ff533c;
+  }
+  .pay-tab-box {
+    background: #fff;
+    padding: 70rpx 44rpx 64rpx;
+    .item-tab {
+      float: left;
+      width: 170rpx;
+      height: 65rpx;
+      line-height: 60rpx;
+      text-align: center;
+      border: 0.5px solid #dcdcdc;
+      box-sizing: border-box;
+      font-size: 34rpx;
+      font-weight: 300;
+      &:nth-child(2) {
+        margin: 0 70rpx;
+      }
+      &.active {
+        box-sizing: border-box;
+        border: 0.5px solid #ff533c;
+        color: #ff533c;
+      }
+    }
+  }
+  .price-box {
+    margin: 0 auto;
+    width: 300rpx;
+    padding: 0 30rpx;
+    font-size: 30rpx;
+    text-align: center;
+    font-weight: 300;
+    .nowPrice {
+      color: #ff533c;
+      font-size: 60rpx;
+      font-weight: 400;
+      .pic {
+        font-size: 32rpx;
+        color: #ff533c;
+      }
+    }
+    .oldPrice {
+      font-size: 24rpx;
+      color: #999999;
+      text-decoration: line-through;
+      font-weight: 300;
+    }
+    view {
+      display: inline;
+    }
+  }
+  .pay-btn {
+    display: block;
+    width: 660rpx;
+    height: 90rpx;
+    line-height: 90rpx;
+    margin: 60rpx auto 0;
+    text-align: center;
+    font-size: 36rpx;
+    background: #ff533c;
+    color: #fff;
+  }
+}
+.pay-pop-show .pay-con {
+  transform: translateY(0);
+  padding: 0;
+  box-sizing: border-box;
+}
+</style>
+
+<template>
+    <view class="pay-pop {{ showPop ? 'pay-pop-show' : '' }}">
+        <view class="pay-box"></view>
+        <view class="pay-con">
+            <image class="close-btn" src="../../images/close-icon.png" @tap="closePop"></image>
+            <view class="title" wx:if="{{callFrom == '1'}}">{{popTitle}}</view>
+            <view class="title" wx:if="{{callFrom == '2'}}">{{adCallPayTitle1}}</view>
+            <view class="title title2" wx:if="{{callFrom == '2'}}">{{adCallPayTitle2}}</view>
+            <!-- 支付选择 -->
+            <view class="pay-tab-box clearfix">
+                <view wx:for="{{payTab}}" wx:key="{{item.index}}"
+                class="item-tab br-6 {{acIndex == item.sort ? 'active' : ''}}"
+                @tap="selePay({{item.sort}},{{item.u_money}},{{item.money}},{{item.id}})"
+                >{{item.title}}
+              </view>
+            </view>
+            <!-- 价格信息 -->
+            <view class="price-box">
+                <view>仅需:</view><view class="nowPrice"><view class="pic">￥</view>{{nowPrice}}</view><view class="oldPrice">￥{{oldPrice}}</view>
+            </view>
+            <!-- 支付按钮 -->
+            <view class="pay-btn br-6" @tap="goPay">{{payText}}</view>
+        </view>
+  </view>
+</template>
+<script>
+import wepy from "wepy";
+import tip from "../../utils/tip";
+import { wxRequest } from "../../utils/wxRequest";
+export default class PayPop extends wepy.component {
+  props = {
+    showPop: {
+      type: Boolean,
+      default: false
+    },
+    vipFrom: {
+      type: String,
+      default: ""
+    },
+    callFrom: {
+      type: String,
+      default: "1"
+    },
+    popTitle: {
+      type: String,
+      default: "开通香哈会员"
+    }
+  };
+  data = {
+    isOk: true,
+    isAndroid: false,
+    acIndex: 1,
+    payTab: [], // 支付list
+    adCallPayTitle1: "",
+    adCallPayTitle2: "",
+    payText: "立即开通",
+    nowPrice: "",
+    oldPrice: "",
+    payId: "" // 支付id
+  };
+  onLoad() {
+    this.getPayTab();
+    this.isAndroid = wepy.getStorageSync("isAndroid");
+  }
+
+  async getPayTab() {
+    wxRequest("/DishMenus/Main2/Index/vipStall").then(res => {
+      if (res.code == 10000 && res.data) {
+        this.payTab = res.data.list;
+        this.adCallPayTitle1 = res.data.text1;
+        this.adCallPayTitle2 = res.data.text2;
+        this.nowPrice = res.data.list[0].u_money;
+        this.oldPrice = res.data.list[0].money;
+        this.payId = res.data.list[0].id;
+        this.$apply();
+      } else {
+        tip.totas("获取失败");
+      }
+    });
+  }
+
+  methods = {
+    closePop() {
+      this.$emit("payPop"); // 操作支付弹层的显示隐藏
+    },
+    selePay(index, price, oldPrice, payId) {
+      this.acIndex = index;
+      this.nowPrice = price;
+      this.oldPrice = oldPrice;
+      this.payId = payId;
+    },
+    goPay() {
+      let that = this;
+      if (that.isOk) {
+        if (!that.isAndroid) {
+          tip.openConfirm({
+            title: "友情提示",
+            con: "由于平台限制，请在香哈菜谱APP开通会员观看",
+            showC: true,
+            okCbFn: () => {
+              that.$emit("payPop");
+            }
+          });
+          return;
+        }
+        tip.loading("订单提交中...");
+        that.isOk = false;
+        // 先调取后台接口生成订单
+        let params = {
+          stallId: that.payId,
+          vipFrom: that.vipFrom
+        };
+        wxRequest("/DishMenus/Main2/Pay/getPrePay", params).then(res => {
+          if (res.code == 10000 && res.data) {
+            // 发起微信支付
+            wx.requestPayment({
+              appId: res.data.appId,
+              timeStamp: res.data.timeStamp,
+              nonceStr: res.data.nonceStr,
+              package: res.data.package,
+              signType: "MD5",
+              paySign: res.data.paySign,
+              success: function(res) {
+                // console.log("成功回调");
+                // console.log(res);
+                setTimeout(() => {
+                  //支付成功 关闭loadding
+                  that.isOk = true;
+                  // 更新用户状态
+                  that.$emit("payCallBackFn");
+                  tip.loaded();
+                }, 2000);
+              },
+              fail: function(res) {
+                tip.alert("支付失败");
+                setTimeout(() => {
+                  that.isOk = true;
+                  tip.loaded();
+                }, 2000);
+              },
+              complete: function(res) {}
+            });
+          } else {
+            that.isOk = true;
+            tip.loaded();
+            tip.toast(res.msg);
+            that.$apply();
+          }
+        });
+        // 调起超时
+        setTimeout(() => {
+          that.isOk = true;
+          tip.loaded();
+          that.$apply();
+        }, 3000);
+      }
+    }
+  };
+}
+</script>

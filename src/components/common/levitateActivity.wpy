@@ -1,0 +1,62 @@
+<style lang="less">
+.levitate-activity-box {
+  .activity-btn-fix {
+    position: fixed;
+    top: 540rpx;
+    right: -100rpx;
+    width: 127rpx;
+    height: 122rpx;
+    background: transparent;
+    image {
+      width: 127rpx;
+      height: 122rpx;
+    }
+  }
+}
+</style>
+<template>
+  <view class="levitate-activity-box clearfix">
+    <form @submit="submit" report-submit='true'>
+      <button class="activity-btn-fix" open-type="contact" animation="{{animationDataAc}}" form-type="submit" @tap="qbModel">
+        <image src="{{activityData.img}}"></image>
+      </button>
+    </form>
+  </view>
+</template>
+<script>
+import wepy from "wepy";
+import { wxRequest } from "../../utils/wxRequest";
+import tip from "../../utils/tip.js";
+export default class levitateActivity extends wepy.component {
+  props = {
+    animationDataAc: {
+      type: Object,
+      default: {}
+    },
+    activityData: {
+      type: Object,
+      default: {}
+    },
+    isQB: {
+      type: Boolean,
+      default: false
+    }
+  };
+  data = {};
+
+  onLoad() {}
+
+  methods = {
+    submit(e) {
+      wxRequest("/DishMenus/Main2/Public/addFormIds", {
+        formIds: e.detail.formId
+      }).then(res => {});
+    },
+    qbModel(){
+      if(this.isQB){
+        tip.toast('关注“香哈菜谱”公众号后领取')
+      }
+    }
+  };
+}
+</script>

@@ -1,0 +1,140 @@
+<style lang="less">
+.recipes-list-box {
+  .item-one {
+    padding-bottom: 40rpx;
+    border-top: 1rpx solid #e9e9e9;
+    .info {
+      position: relative;
+      display: block;
+      margin-top: 40rpx;
+    }
+    .info-img {
+      display: block;
+      position: relative;
+      width: 100%;
+      height: 402rpx;
+      background: url("http://s2.cdn.xiangha.com/images/m5/Common/caidan-bg.png")
+        no-repeat;
+      background-size: 100% auto;
+      .bf-btn {
+        width: 96rpx;
+        height: 96rpx;
+      }
+      .time {
+        position: absolute;
+        bottom: 12rpx;
+        right: 12rpx;
+        color: #ffffff;
+        font-size: 22rpx;
+      }
+      .vip-icon {
+        position: absolute;
+        top: 12rpx;
+        right: 12rpx;
+        width: 59rpx;
+        height: 34rpx;
+        line-height: 36rpx;
+        text-align: center;
+        color: #ffffff;
+        background: #ebb54e;
+        font-size: 24rpx;
+        border-radius: 4rpx;
+      }
+    }
+    .title {
+      display: block;
+      width: 80%;
+      margin: 26rpx 0 14rpx;
+      height: 50rpx;
+      line-height: 50rpx;
+      text-align: left;
+      font-size: 36rpx;
+      color: #444444;
+      font-weight: 700;
+    }
+    .search-btn {
+      position: absolute;
+      top: 436rpx;
+      right: 0;
+      width: 20%;
+      height: 20%;
+      image{
+        width: 29rpx;
+        height: 28rpx;
+        margin-left: 100rpx;
+      }
+    }
+    .info-profiles {
+      color: #b5b4b4;
+      font-size: 24rpx;
+      text,
+      image {
+        float: left;
+        margin-left: 6rpx;
+      }
+      text:nth-of-type(2),
+      text:nth-of-type(3) {
+        margin-left: 20rpx;
+      }
+      image {
+        width: 23rpx;
+        height: 20rpx;
+        margin-top: 8rpx;
+      }
+    }
+    &:nth-child(1) {
+      border-top: none;
+    }
+  }
+}
+</style>
+<template>
+  <view class="recipes-list-box">
+        <view class="item-one" wx:for="{{list}}" wx:key="{{item.key}}">
+            <view @tap="navTo('/pages/recipeDetail?dishCode={{item.code}}',{{openType}})">
+              <view class="info">
+                <image src="{{item.img}}" class="info-img br-4" mode="aspectFill">
+                  <view wx:if="{{item.isVip == 2}}" class="vip-icon">VIP</view>
+                  <image wx:if="{{item.isVideo == 2}}" src="../images/bf-btn.png" class="bf-btn ps-center"></image>
+                  <view wx:if="{{item.isVideo == 2}}" class="time">{{item.videoTime}}</view>
+                </image>
+                <view class="title ellipsis">{{item.title}}</view>
+                <view class="search-btn" @tap="navTo('/pages/search?code={{item.title}}',{{openType}})">
+                  <image src="../images/recipes-search-pic.png"></image>
+                </view>
+                <view class="info-profiles clearfix">
+                  <text>{{item.customer.nickName}}</text>
+                  <image src="../images/meishijia-icon.png" wx:if="{{item.customer.isGourmet == 2}}"></image>
+                  <text>{{item.numInfo1}}</text>
+                  <text>{{item.numInfo2}}</text>
+                </view>
+              </view>
+            </view>
+        </view>
+    </view>
+</template>
+<script>
+import wepy from "wepy";
+import utils from "../utils/util";
+export default class RecipesComBList extends wepy.component {
+  props = {
+    list: Array,
+    default: []
+  };
+  data = {
+    openType: "redirect"
+  };
+  onLoad() {
+    let nType = utils.routingStack();
+    this.openType = nType;
+  }
+  events = {};
+  methods = {
+    // 页面跳转
+    navTo(url, openType) {
+      utils.xhNavigateTo(url, openType);
+    }
+  };
+}
+</script>
+

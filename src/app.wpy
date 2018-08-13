@@ -1,0 +1,83 @@
+<style lang="less">
+@import "../src/styles/base.less";
+</style>
+<script>
+import wepy from "wepy";
+import "wepy-async-function";
+import HOST from "../src/utils/wxRequest";
+import tip from "../src/utils/tip";
+
+export default class extends wepy.app {
+  constructor() {
+    super();
+    this.use("requestfix");
+    this.use("promisify");
+  }
+  config = {
+    pages: [
+      "pages/home"
+    ],
+    window: {
+      navigationBarBackgroundColor: "#1b1b1f",
+      navigationBarTitleText: "香哈菜谱",
+      navigationBarTextStyle: "white",
+      backgroundTextStyle: "light",
+      enablePullDownRefresh: false
+    },
+    tabBar: {
+      color: "#95989e",
+      selectedColor: "#000000",
+      backgroundColor: "#f7f7fa",
+      borderStyle: "#ccc",
+      list: [
+        {
+          pagePath: "pages/home",
+          text: "搜索",
+          iconPath: "images/home-icon.png",
+          selectedIconPath: "images/home-active-icon.png"
+        },
+        {
+          pagePath: "pages/home",
+          text: "收藏",
+          iconPath: "images/home-icon.png",
+          selectedIconPath: "images/home-active-icon.png"
+        },
+        {
+          pagePath: "pages/home",
+          text: "历史",
+          iconPath: "images/home-icon.png",
+          selectedIconPath: "images/home-active-icon.png"
+        }
+      ]
+    },
+    userInfo: ""
+  };
+
+  globalData = {
+    host: "https://apiwx.xiangha.com",
+    userInfo: null,
+    jsCode: ""
+  };
+
+  async onLaunch(options) {
+    // 定义重新进入
+    let that = this;
+    var userInfo = wepy.getStorageSync("userInfo");
+    if (!userInfo) {
+      wepy.login().then(res => {
+        // console.log("login数据如下");
+        // console.log(res);
+        let resData = res;
+        that.globalData.jsCode = resData.code;
+      });
+    } else {
+      this.userInfo = userInfo;
+    }
+
+    // let xhHost = wepy.getStorageSync("xhHost");
+    // if(!xhHost){
+    //   wepy.setStorageSync("xhHost",'https://apiwx.xiangha.com');
+    // }
+  }
+}
+</script>

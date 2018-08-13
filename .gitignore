@@ -1,0 +1,12 @@
+.vscode/
+.settings/
+.buildpath
+.project
+.idea/*
+dist/
+node_modules
+npm-debug.log
+*.wepycache
+sss.sh
+.DS_Store
+*/.DS_Store

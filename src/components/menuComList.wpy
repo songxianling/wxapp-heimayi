@@ -1,0 +1,97 @@
+<style lang="less">
+.caidan-list-box {
+  .have-con {
+    width: 100%;
+    background: #fff;
+    .caidan {
+      .con {
+        padding: 40rpx 40rpx 0;
+        background: #ffffff;
+        display: flex;
+        align-items: center;
+        .con-l {
+          width: 299rpx;
+          height: 149rpx;
+          background: #ffffff;
+          image {
+            width: 149rpx;
+            height: 149rpx;
+          }
+          image:first-child {
+            margin-right: 1px;
+          }
+        }
+        .con-r {
+          width: 360rpx;
+          padding-left: 36rpx;
+          box-sizing: border-box;
+          overflow: hidden;
+          .min-con {
+            overflow: hidden;
+            padding-top: 13rpx;
+          }
+          .title {
+            font-size: 36rpx;
+            font-weight: 700;
+            overflow: hidden;
+            line-height: 48rpx;
+            color: #444444;
+          }
+          .ellipsis {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            white-space: pre-wrap;
+          }
+        }
+      }
+    }
+  }
+}
+</style>
+<template>
+  <view class="caidan-list-box">
+        <view class="have-con clearfix" wx:for="{{list}}" wx:key="index">
+                <view class="caidan">
+                  <view @tap="navTo('/pages/menuDetail?code={{item.code}}')" class="clearfix">
+                    <view class="con clearfix">
+                      <view class="con-l">
+                        <block wx:for="{{item.img}}" wx:key="{{item.index}}">
+                          <image src="{{item}}" class="con-l-img"></image>
+                        </block>
+                      </view>
+                      <view class="con-r">
+                        <text class="title ellipsis">{{item.title}}</text>
+                        <view class="min-con min-sty-hui clearfix">
+                          <text class="num one">{{item.dishNum}}</text>
+                          <text class="see two">{{item.allClick}}</text>
+                        </view>
+                      </view>
+                    </view>
+                  </view>
+                </view>
+            </view>
+    </view>
+</template>
+<script>
+import wepy from "wepy";
+import utils from "../utils/util";
+export default class MenuComList extends wepy.component {
+  props = {
+    list: []
+  };
+
+  events = {};
+  methods = {
+    // 页面跳转
+    navTo(url) {
+      utils.xhNavigateTo(url);
+    }
+  };
+
+  onLoad() {}
+}
+</script>
+

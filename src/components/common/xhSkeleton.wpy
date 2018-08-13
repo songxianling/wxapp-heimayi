@@ -1,0 +1,37 @@
+<style lang="less">
+.skeleton-box {
+  .con{
+    background: #f14d22;
+  }
+}
+</style>
+<!-- 香哈骨架屏 -->
+<template>
+<view class="skeleton-box">
+  <view class="con" style="width:{{width}};height:{{height}};background:{{background}}"></view>
+</view>
+</template>
+<script>
+import wepy from "wepy";
+export default class XhSkeleton extends wepy.component {
+  props = {
+    width:{
+      default:''
+    },
+    height:{
+      default:''
+    },
+    background:{
+      default:''
+    }
+  };
+  data = {};
+
+  onLoad() {
+  }
+
+  methods = {
+
+  };
+}
+</script>

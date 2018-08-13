@@ -1,0 +1,82 @@
+<style lang="less">
+.content-box {
+  .login-box {
+    padding: 300rpx 40rpx;
+    .user-box {
+      width: 100%;
+      padding: 20rpx;
+      text-align: center;
+      box-sizing: border-box;
+      background: linear-gradient(to left, #e98d43, #f2dd14);
+      border-radius: 20rpx;
+      margin-bottom: 60rpx;
+    }
+
+    .admin-box {
+      width: 100%;
+      padding: 20rpx;
+      text-align: center;
+      box-sizing: border-box;
+      background: linear-gradient(to left, #6c66fe, #d28ff8);
+      border-radius: 20rpx;
+    }
+  }
+}
+</style>
+<template>
+  <view class="content-box">
+    <view class="login-box">
+      <!-- 身份选择 -->
+      <view class="identity-box">
+          <view class="user-box">
+              我是普通用户
+          </view>
+          <view class="admin-box">
+              我是管理员
+          </view>
+        </view>
+    </view>
+    <picker mode="selector" bindchange="bindRegionChange" range="{{region}}" custom-item="{{customItem}}">
+      <view class="picker">
+        当前选择：{{region[0]}}，{{region[1]}}，{{region[2]}}
+      </view>
+    </picker>
+    <!-- 进行登录 -->
+  </view>
+</template>
+<script>
+import wepy from 'wepy'
+import { wxRequest } from '../utils/wxRequest'
+import tip from '../utils/tip'
+import utils from '../utils/util'
+
+export default class Home extends wepy.page {
+  config = {
+    navigationBarTitleText: '香哈菜谱'
+  }
+  components = {}
+  data = {
+    region: ['广东省', '广州市', '海珠区'],
+    customItem: '全部'
+  }
+
+  onLoad(ops) {
+    let that = this
+  }
+
+  computed = {}
+  methods = {
+    bindRegionChange: e => {
+      console.log('picker发送选择改变，携带值为', e.detail.value)
+      this.region = e.detail.value
+      this.$apply()
+    }
+  }
+  events = {}
+  //加载更多
+  onReachBottom() {
+    let that = this
+  }
+}
+</script>
+

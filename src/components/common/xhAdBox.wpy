@@ -1,0 +1,78 @@
+<style lang="less">
+.xh-ad-box {
+  position: relative;
+  padding-left: 40rpx;
+  padding-right: 40rpx;
+  background: #fff;
+  .ad-close-btn {
+    position: absolute;
+    right: 43rpx;
+    top: 3rpx;
+    width: 33rpx;
+    height: 33rpx;
+    z-index: 11;
+  }
+}
+</style>
+<template>
+  <view class="xh-ad-box {{styleClass}}" wx:if="{{showAdBox && !fromService && unitId && !isQB}}">
+    <image class="ad-close-btn" src="../../images/close.png" @tap='closeAdBox'></image>
+    <ad unit-id="{{unitId}}"></ad>
+  </view>
+</template>
+<script>
+import wepy from "wepy";
+export default class XhAdBox extends wepy.component {
+  props = {
+    showAdBox: {
+      type: Boolean,
+      default: false
+    },
+    fromService: {
+      type: Boolean,
+      default: false
+    },
+    unitId: {
+      type: String,
+      default: ""
+    },
+    styleClass: {
+      type: String,
+      default: ""
+    }
+  };
+  data = {
+    isQB: false,
+    adCallPay: false // 广告拉起支付
+  };
+  onLoad() {
+    this.adCallPay = wepy.getStorageSync("adCallPay");
+    let that = this;
+    wx.getSystemInfo({
+      success: function(res) {
+        that.isQB = res.isQB;
+        that.$apply();
+      }
+    });
+  }
+  /*
+  全站广告组件：一天内全站广告的关闭按钮只会拉起支付一次；第二次直接关闭广告
+  哼；人家可爱的用户点关闭；仰鹏却辣么邪恶😈的让拉起支付；如此不要x的行为；也只有
+  我们的NB产品才能想得到；佩服佩服～～
+  */
+  methods = {
+    closeAdBox() {
+      this.showAdBox = false;
+      // 单独区分菜谱详情处广告拉起支付后的关闭按钮🌹
+      if (this.unitId == "adunit-287a09fdb8ef1ea7") {
+        this.$emit("closeAd");
+      }
+      // 当前是允许广告拉起支付🌊
+      if (this.adCallPay) {
+        this.$emit("payPop"); // 操作支付弹层的显示隐藏
+      }
+      wepy.setStorageSync("adCallPay", false);
+    }
+  };
+}
+</script>

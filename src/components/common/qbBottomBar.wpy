@@ -1,0 +1,83 @@
+<style lang="less">
+.fix-bot-qb-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 96rpx;
+  line-height: 96rpx;
+  border-top: 1px solid #ededed;
+  background: #fcfcfc;
+  color: #000000;
+  z-index: 1001;
+  .item {
+    flex: 1;
+    display: inline-block;
+    // float: left;
+    // width: 33%;
+    text-align: center;
+    border: none;
+    background: #fcfcfc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .icon {
+      width: 36rpx;
+      height: 35rpx;
+      margin-right: 10rpx;
+      &.icon-nav {
+        margin-bottom: 5rpx;
+      }
+    }
+    &.item-2 {
+      .icon {
+        width: 38rpx;
+        height: 37rpx;
+        margin-right: 12rpx;
+      }
+    }
+    .text {
+      color: #000000;
+      display: inline-block;
+    }
+  }
+}
+</style>
+<template>
+  <view class="fix-bot-qb-box clearfix">
+    <navigator class="item" url="/pages/home" open-type="switchTab" hover-class="none">
+      <image class="icon icon-nav" src="../../images/home-nav-icon.png"></image>
+      <view class="text">回首页</view>
+    </navigator>
+    <navigator class="item item-2" url="/pages/search?code={{model.name}}" open-type="navigate" hover-class="none">
+      <image class="icon icon-nav" src="../../images/qb-bot-bar-2.png"></image>
+      <view class="text">搜同类</view>
+    </navigator>
+    <navigator class="item" url="/pages/classify" open-type="switchTab" hover-class="none">
+      <image class="icon icon-nav" src="../../images/qb-bot-bar-3.png"></image>
+      <view class="text">分类</view>
+    </navigator>
+  </view>
+</template>
+<script>
+import wepy from "wepy";
+export default class QbBottomBar extends wepy.component {
+  props = {
+    model: {
+      type: Object,
+      default: {}
+    }
+  };
+  data = {};
+
+  onLoad() {}
+
+  methods = {
+    setLike() {
+      this.$emit("setLike");
+    }
+  };
+}
+</script>

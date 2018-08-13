@@ -1,0 +1,94 @@
+<style lang="less">
+.xh-swiper-box {
+  width: 100%;
+  height: 375rpx;
+  .recommend-hot-box {
+    width: 100%;
+    .item-img {
+      width: 100%;
+      height: 100%;
+      vertical-align: top;
+    }
+  }
+  .wx-swiper-dot {
+    width: 6px;
+    height: 6px;
+  }
+  .text-top {
+    display: block;
+    width: 500rpx;
+    text-align: center;
+    color: #fff;
+    font-weight: 700;
+    font-size: 40rpx;
+    white-space: pre-line;
+    display: -webkit-box;
+    display: -moz-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-all;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-height: 50rpx;
+  }
+  .text-bot {
+    display: block;
+    margin: 0 auto;
+    width: 500rpx;
+    text-align: center;
+    font-size: 28rpx;
+    color: #fff;
+    padding-top: 12rpx;
+  }
+  .center {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+  }
+}
+</style>
+<template>
+  <swiper class="xh-swiper-box"
+          indicator-color="{{swiperObj.indicatorColor}}"
+          indicator-active-color="{{swiperObj.indicatorActiveColor}}"
+          indicator-dots="{{swiperObj.indicatorDots}}"
+          autoplay="{{swiperObj.autoplay}}"
+          interval="{{swiperObj.interval}}"
+          duration="{{swiperObj.duration}}"
+          circular="true"
+          wx:if="{{swiperObj.list.length}}"
+          >
+      <block wx:for="{{swiperObj.list}}" wx:key="{{item.key}}">
+        <swiper-item class="recommend-hot-box br-4" @tap="navTo('{{item.url}}')">
+          <image src="{{item.img}}" class="item-img" mode="aspectFill"></image>
+          <text class="mask" wx:if="{{item.type == 2}}"></text>
+          <view class="text-box center">
+            <text class="text-top">{{item.title}}</text>
+            <text class="text-bot">{{item.dishNum}}</text>
+          </view>
+        </swiper-item>
+      </block>
+    </swiper>
+</template>
+<script>
+import wepy from "wepy";
+import utils from "../utils/util";
+export default class XhSwiper extends wepy.component {
+  props = {
+    swiperObj: {
+      type: Object,
+      default: {}
+    }
+  };
+  data = {};
+  onLoad() {}
+
+  methods = {
+    navTo(url) {
+      utils.xhNavigateTo(url);
+    }
+  };
+}
+</script>

@@ -1,0 +1,49 @@
+<style lang="less">
+.levitate-share-box {
+  .share-btn-fix {
+    position: fixed;
+    bottom: 15rpx;
+    left: 50%;
+    margin-left: -107rpx;
+    width: 218rpx;
+    height: 86rpx;
+    background: transparent;
+    image {
+      width: 218rpx;
+      height: 86rpx;
+    }
+  }
+}
+</style>
+<template>
+  <view class="levitate-share-box clearfix">
+    <form @submit="submit" report-submit='true'>
+      <button class="share-btn-fix" open-type="share" animation="{{animationData}}" form-type="submit">
+        <image src="../../images/com-levitate-share.png"></image>
+      </button>
+    </form>
+  </view>
+</template>
+<script>
+import wepy from "wepy";
+import { wxRequest } from "../../utils/wxRequest";
+export default class levitateShare extends wepy.component {
+  props = {
+    animationData: {
+      type: Object,
+      default: {}
+    }
+  };
+  data = {};
+
+  onLoad() {}
+
+  methods = {
+    submit(e) {
+      wxRequest("/DishMenus/Main2/Public/addFormIds",{formIds:e.detail.formId}).then(res => {
+
+      });
+    }
+  };
+}
+</script>

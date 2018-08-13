@@ -1,0 +1,172 @@
+<style lang="less">
+.kc-list-box {
+  .kc-title {
+    padding-left: 40rpx;
+    margin: 36rpx 0 22rpx;
+    font-size: 32rpx;
+    text-align: left;
+    font-weight: 700;
+    color: #444444;
+  }
+  .kc-scroll-x-box {
+    width: 100%;
+    white-space: nowrap;
+    margin-bottom: 50rpx;
+    .defa {
+      .kc-scroll-item {
+        display: inline-block;
+        width: 326rpx;
+        height: auto;
+        margin-right: 20rpx;
+        &:nth-child(1) {
+          margin-left: 40rpx;
+        }
+        &:nth-last-child(1) {
+          margin-right: 40rpx;
+        }
+        .kc-scroll-image {
+          position: relative;
+          width: 100%;
+          height: 326rpx;
+          background: #ccc;
+        }
+        .kc-name {
+          display: block;
+          width: 220rpx;
+          margin: 6rpx auto 2rpx;
+          text-align: center;
+          font-size: 28rpx;
+        }
+      }
+    }
+    .mingchu {
+      color: #ffffff;
+      .mc-scroll-item {
+        display: inline-block;
+        width: 326rpx;
+        height: 408rpx;
+        margin-right: 20rpx;
+        position: relative;
+        &:nth-child(1) {
+          margin-left: 40rpx;
+        }
+        &:nth-last-child(1) {
+          margin-right: 40rpx;
+        }
+        .mc-scroll-image {
+          position: relative;
+          width: 100%;
+          height: 408rpx;
+          background: #ccc;
+        }
+        .stu-num {
+          position: absolute;
+          top: 15rpx;
+          right: 10rpx;
+          padding: 0 12rpx;
+          height: 38rpx;
+          line-height: 38rpx;
+          text-align: center;
+          font-size: 22rpx;
+          border-radius: 20rpx;
+          color: #ffffff;
+          background: #33cc00;
+        }
+
+        .mask {
+          width: 100%;
+          height: 290rpx;
+          position: absolute;
+          left: 0;
+          bottom: 0;
+          .kc-name {
+            position: absolute;
+            top: 150rpx;
+            left: 22rpx;
+            text-align: left;
+            font-size: 34rpx;
+            font-weight: 700;
+            color: #ffffff;
+          }
+          .mc-name {
+            position: absolute;
+            top: 200rpx;
+            left: 22rpx;
+            text-align: left;
+            font-size: 26rpx;
+            color: #ffffff;
+            font-weight: 500;
+          }
+          .mc-info {
+            position: absolute;
+            top: 240rpx;
+            left: 22rpx;
+            text-align: left;
+            font-size: 26rpx;
+            color: #ffffff;
+          }
+        }
+      }
+    }
+  }
+}
+</style>
+<template>
+  <view class="kc-list-box">
+    <block wx:for="{{kcList}}" wx:key="{{item.index}}">
+      <block wx:if="{{item.list.length}}">
+        <view class="kc-title">{{item.task}}</view>
+        <block wx:if="{{item.type == 1}}">
+          <scroll-view class="kc-scroll-x-box" scroll-x="true">
+            <view class="defa" >
+              <view class="kc-scroll-item" wx:for="{{item.list}}" wx:key="{{item.key}}">
+                <view @tap="navTo('/pages/recipeDetail?dishCode={{item.dishCode}}&chapterCode={{item.chapterCode}}&courseCode={{item.courseCode}}')">
+                  <image src="{{item.img}}" lazy-load="true" class="kc-scroll-image"></image>
+                  <text class="kc-name ellipsis">{{item.title}}</text>
+                </view>
+              </view>
+            </view>
+          </scroll-view>
+        </block>
+        <block wx:else>
+          <scroll-view class="kc-scroll-x-box" scroll-x="true">
+            <view class="mingchu">
+              <view class="mc-scroll-item" wx:for="{{item.list}}" wx:key="{{item.key}}">
+                <view @tap="navTo('/pages/recipeDetail?dishCode={{item.dishCode}}&chapterCode={{item.chapterCode}}&courseCode={{item.courseCode}}')">
+                  <image src="{{item.img}}" lazy-load="true" mode="widthFix" class="mc-scroll-image"></image>
+                  <text class="stu-num">{{item.numInfo}}</text>
+                  <image class="mask" src="../images/vip-shadow.png">
+                      <text class="kc-name ellipsis">{{item.title}}</text>
+                      <text class="mc-name ellipsis">{{item.name}}</text>
+                      <text class="mc-info ellipsis">{{item.subTitle}}</text>
+                  </image>
+                </view>
+              </view>
+            </view>
+          </scroll-view>
+        </block>
+      </block>
+    </block>
+  </view>
+</template>
+<script>
+import wepy from "wepy";
+import utils from "../utils/util";
+export default class CourseComList extends wepy.component {
+  props = {
+    kcList: {
+      type:Object,
+      default:{}
+    }
+  };
+  events = {};
+  methods = {
+    // 页面跳转
+    navTo(url) {
+      utils.xhNavigateTo(url);
+    }
+  };
+  onLoad() {}
+}
+</script>
+

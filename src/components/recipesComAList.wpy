@@ -1,0 +1,222 @@
+<style lang="less">
+.caipu-list-box {
+  padding: 0 40rpx;
+  box-sizing: border-box;
+  .item-one {
+    margin-bottom: 36rpx;
+    display: flex;
+    align-items: center;
+    .con-l {
+      position: relative;
+      width: 300rpx;
+      height: 210rpx;
+      .bf-btn {
+        display: inline-block;
+        width: 100rpx;
+        height: 34rpx;
+        line-height: 34rpx;
+        border-radius: 30rpx;
+        background: rgba(0, 0, 0, 0.5);
+        .bf-time-con {
+          font-size: 20rpx;
+          color: #fff;
+          image {
+            width: 10rpx;
+            height: 16rpx;
+            margin-left: 18rpx;
+          }
+        }
+      }
+    }
+    .con-r {
+      width: 334rpx;
+      height: 210rpx;
+      padding-left: 36rpx;
+      box-sizing: border-box;
+      font-size: 24rpx;
+      position: relative;
+      .title {
+        display: block;
+        width: 100%;
+        height: 56rpx;
+        line-height: 56rpx;
+        font-size: 36rpx;
+        font-weight: 700;
+        color: #444444;
+      }
+      .yongliao {
+        width: 100%;
+        height: 56rpx;
+        line-height: 66rpx;
+        color: #525252;
+      }
+      .min-sty-hui {
+        font-size: 24rpx;
+        color: #969696;
+      }
+      .author {
+        display: inline-block;
+        height: 44rpx;
+        line-height: 50rpx;
+      }
+      .time {
+        margin-right: 20rpx;
+      }
+      .min-con {
+        display: block;
+        height: 50rpx;
+        line-height: 50rpx;
+        font-size: 24rpx;
+        color: #525252;
+        .collection {
+          padding-left: 24rpx;
+        }
+      }
+      .dish-count {
+        display: block;
+        margin-top: 30rpx;
+      }
+    }
+    .height-auto {
+      height: auto;
+    }
+  }
+  .con {
+    padding-bottom: 40rpx;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    .col-l-caidan {
+      height: 149rpx;
+      position: relative;
+      width: 300rpx;
+      image {
+        width: 149rpx;
+        height: 149rpx;
+      }
+      image:first-child {
+        margin-right: 1rpx;
+      }
+    }
+    .con-r {
+      width: 370rpx;
+      padding-left: 36rpx;
+      box-sizing: border-box;
+      overflow: hidden;
+      .min-con {
+        overflow: hidden;
+        padding-top: 13rpx;
+      }
+      .min-sty-hui {
+        font-size: 24rpx;
+        color: #969696;
+      }
+      .title {
+        font-size: 36rpx;
+        font-weight: 700;
+        overflow: hidden;
+        line-height: 48rpx;
+        color: #444444;
+      }
+      .ellipsis {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        white-space: pre-wrap;
+      }
+    }
+  }
+}
+</style>
+<template>
+  <view class="caipu-list-box clearfix">
+    <block wx:if="{{oType == 2}}">
+		<block wx:for="{{caipuList}}" wx:key="{{item.index}}">
+			<view @tap="navTo('/pages/recipeDetail?dishCode={{item.code}}',{{openType}})" class="item-one clearfix" wx:if="{{item.isDish==2}}">
+				<image class="con-l type_green" src="{{item.img}}" mode="aspectFill">
+          <view wx:if="{{item.isVideo==2}}" class="bf-btn ps-right-bottom">
+            <view class="bf-time-con">
+              <image src="../images/play-arrow.png"></image>
+              {{item.videoTime}}
+            </view>
+          </view>
+				</image>
+				<view class="con-r">
+				    <text class="title ellipsis">{{item.title}}</text>
+				    <text class="yongliao ellipsis">{{item.ingreMian}}</text>
+				    <text class="author min-sty-hui">{{item.nickName}}</text>
+					<view class="min-con clearfix">
+						<text class="see one">{{item.numInfo1}}</text>
+						<text class="collection two">{{item.numInfo2}}</text>
+					</view>
+				</view>
+			</view>
+			<view @tap="navTo('/pages/menuDetail?code={{item.code}}',{{openType}})" class="con  clearfix" wx:else>
+        <view class="con-l col-l-caidan">
+          <block wx:for="{{item.img}}" wx:key="{{item.index}}">
+            <image src="{{item}}" mode="aspectFill" class="con-l-img"></image>
+          </block>
+        </view>
+        <view class="con-r height-auto">
+          <text class="title ellipsis">{{item.title}}</text>
+          <text class="dish-count min-sty-hui">{{item.numInfo1}}</text>
+        </view>
+			</view>
+		</block>
+	</block>
+	  <block wx:else>
+		  <block wx:for="{{caipuList}}" wx:key="{{item.index}}">
+				  <view @tap="navTo('/pages/recipeDetail?dishCode={{item.code}}',{{openType}})" class="item-one clearfix">
+					  <image class="con-l type_green" src="{{item.img}}" mode="aspectFill">
+              <view wx:if="{{item.isVideo==2}}" class="bf-btn ps-right-bottom">
+                <view class="bf-time-con">
+                  <image src="../images/play-arrow.png" ></image>
+                {{item.videoTime}}
+                </view>
+              </view>
+					  </image>
+					  <view class="con-r">
+						  <text class="title ellipsis">{{item.title}}</text>
+						  <text class="yongliao ellipsis">{{item.ingreMian}}</text>
+						  <text class="author min-sty-hui">{{item.nickName}}</text>
+						  <view class="min-con clearfix">
+							  <text class="see one">{{item.numInfo1}}</text>
+							  <text class="collection two">{{item.numInfo2}}</text>
+						  </view>
+					  </view>
+				  </view>
+		  </block>
+    </block>
+  </view>
+</template>
+<script>
+import wepy from "wepy";
+import utils from "../utils/util";
+export default class RecipesComAList extends wepy.component {
+  props = {
+    caipuList: {
+      type: Array,
+      default: []
+    },
+    oType: {
+      default: 1
+    }
+  };
+  data = {
+    openType: "redirect"
+  };
+  onLoad() {
+    let nType = utils.routingStack();
+    this.openType = nType;
+  }
+  events = {};
+  methods = {
+    navTo(url, openType) {
+      utils.xhNavigateTo(url, openType);
+    }
+  };
+}
+</script>
+
