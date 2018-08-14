@@ -15,7 +15,11 @@ export default class extends wepy.app {
   }
   config = {
     pages: [
-      "pages/home"
+      "pages/home",
+      "pages/collection",
+      "pages/history",
+      "pages/userLogin"
+
     ],
     window: {
       navigationBarBackgroundColor: "#1b1b1f",
@@ -33,22 +37,25 @@ export default class extends wepy.app {
         {
           pagePath: "pages/home",
           text: "搜索",
-          iconPath: "images/home-icon.png",
-          selectedIconPath: "images/home-active-icon.png"
+          iconPath: "images/search-icon.png",
+          selectedIconPath: "images/search-active-icon.png"
         },
         {
-          pagePath: "pages/home",
+          pagePath: "pages/collection",
           text: "收藏",
-          iconPath: "images/home-icon.png",
-          selectedIconPath: "images/home-active-icon.png"
+          iconPath: "images/collection-icon.png",
+          selectedIconPath: "images/collection-active-icon.png"
         },
         {
-          pagePath: "pages/home",
+          pagePath: "pages/history",
           text: "历史",
-          iconPath: "images/home-icon.png",
-          selectedIconPath: "images/home-active-icon.png"
+          iconPath: "images/history-icon.png",
+          selectedIconPath: "images/history-active-icon.png"
         }
       ]
+    },
+    usingComponents: {
+      'i-panel': './iViewDist/panel/inde'
     },
     userInfo: ""
   };

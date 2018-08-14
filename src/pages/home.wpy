@@ -1,46 +1,25 @@
 <style lang="less">
-.content-box {
-  .login-box {
+.home-box {
+  .login-out-box {
     padding: 300rpx 40rpx;
-    .user-box {
-      width: 100%;
-      padding: 20rpx;
-      text-align: center;
-      box-sizing: border-box;
-      background: linear-gradient(to left, #e98d43, #f2dd14);
-      border-radius: 20rpx;
-      margin-bottom: 60rpx;
-    }
-
-    .admin-box {
-      width: 100%;
-      padding: 20rpx;
-      text-align: center;
-      box-sizing: border-box;
-      background: linear-gradient(to left, #6c66fe, #d28ff8);
-      border-radius: 20rpx;
+    .select-identity-box {
+      // display: none;
+      button {
+        margin-bottom: 100rpx;
+      }
     }
   }
 }
 </style>
 <template>
-  <view class="content-box">
-    <view class="login-box">
+  <view class="home-box">
+    <view class="login-out-box" wx:if="{{userInfo}}">
       <!-- 身份选择 -->
-      <view class="identity-box">
-          <view class="user-box">
-              我是普通用户
-          </view>
-          <view class="admin-box">
-              我是管理员
-          </view>
-        </view>
-    </view>
-    <picker mode="selector" bindchange="bindRegionChange" range="{{region}}" custom-item="{{customItem}}">
-      <view class="picker">
-        当前选择：{{region[0]}}，{{region[1]}}，{{region[2]}}
+      <view class="select-identity-box">
+        <i-button @tap="goFillInInfo(1)" type="success">我是管理员</i-button>
+        <i-button @tap="goFillInInfo(2)" type="primary">我是业主</i-button>
       </view>
-    </picker>
+    </view>
     <!-- 进行登录 -->
   </view>
 </template>
@@ -52,12 +31,18 @@ import utils from '../utils/util'
 
 export default class Home extends wepy.page {
   config = {
-    navigationBarTitleText: '香哈菜谱'
+    navigationBarTitleText: '香哈菜谱',
+    usingComponents: {
+      'i-button': '../iViewDist/button/index'
+    }
   }
+
   components = {}
   data = {
-    region: ['广东省', '广州市', '海珠区'],
-    customItem: '全部'
+    userInfo: 1,
+    loginId: 1,
+    companyList: ['公司1', '公司名称2', '公司333'],
+    curCompanyIndex: '0'
   }
 
   onLoad(ops) {
@@ -66,9 +51,15 @@ export default class Home extends wepy.page {
 
   computed = {}
   methods = {
-    bindRegionChange: e => {
+    goFillInInfo(type) {
+      // 选择身份进行登录
+      let that = this
+      utils.navigateTo(`/pages/userLogin?id=${type}`)
+    },
+
+    bindPickerChange: e => {
       console.log('picker发送选择改变，携带值为', e.detail.value)
-      this.region = e.detail.value
+      this.curCompanyIndex = e.detail.value
       this.$apply()
     }
   }

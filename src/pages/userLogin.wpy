@@ -1,0 +1,129 @@
+<style lang="less">
+@import '../styles/styleComDef.less';
+.user-login-box {
+  padding: 300rpx 0rpx;
+
+  .select-company-box {
+    position: relative;
+    font-size: 36rpx;
+    margin-bottom: 30rpx;
+    .input-box {
+      position: absolute;
+      top: 15rpx;
+      left: 180rpx;
+      width: 400rpx;
+      height: 70rpx;
+      line-height: 70rpx;
+      box-sizing: border-box;
+      .picker {
+        font-size: 28rpx;
+        color: #495060;
+      }
+    }
+  }
+  .door-id-box{
+    position: relative;
+    .close-btn{
+      position: absolute;
+      top: 10rpx;
+      right: 30rpx;
+    }
+  }
+  button {
+    margin-top: 100rpx;
+  }
+}
+</style>
+<template>
+  <view class="user-login-box">
+      <!-- 填写登录信息 -->
+      <view class="admin-box" wx:if="{{identity == 1}}">
+        <i-cell title="选择公司" is-link class="select-company-box" i-class="cell-defa-style" >
+          <picker class="r input-box" bindchange="bindPickerChange" value="{{curCompanyIndex}}" range="{{companyList}}">
+            <view class="picker">
+              {{companyList[curCompanyIndex]}}
+            </view>
+          </picker>
+        </i-cell>
+        <i-input value="{{ username }}" title="用户名" placeholder="请填写用户名" />
+        <i-input value="{{ password }}" title="密码" placeholder="请填写密码" type="password"/>
+        <i-button @tap="goLogin" type="info" >登录</i-button>
+      </view>
+      <view class="user-box" wx:else>
+        <i-cell title="供应商" is-link class="select-company-box" i-class="cell-defa-style">
+          <picker class="r input-box" bindchange="bindPickerChange" value="{{curSupplierIndex}}" range="{{supplierList}}">
+            <view class="picker">
+              {{supplierList[curSupplierIndex]}}
+            </view>
+          </picker>
+        </i-cell>
+        <view class="door-id-box">
+          <i-input value="{{ doorID }}" title="阀门ID" placeholder="请填写阀门ID" />
+          <i-icon  class="close-btn" type="close" size="14" color="#80848f" />
+        </view>
+        <i-button @tap="goLogin" type="info" >登录</i-button>
+      </view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy'
+import { wxRequest } from '../utils/wxRequest'
+import tip from '../utils/tip'
+import utils from '../utils/util'
+
+export default class Home extends wepy.page {
+  config = {
+    navigationBarTitleText: '业主登录',
+    usingComponents: {
+      'i-button': '../iViewDist/button/index',
+      'i-input': '../iViewDist/input/index',
+      'i-cell': '../iViewDist/cell/index',
+      "i-icon": "../iViewDist/icon/index"
+    }
+  }
+  components = {}
+  data = {
+    identity: 2,
+    username: '',
+    password: '',
+    doorID:'',
+    showSelectIdBox: true,
+    showLoginBox: false,
+    loginId: 1,
+    companyList: ['公司1', '公司名称2', '公司333'],
+    supplierList:['供应商1', '供应商2', '供应商3'],
+    curCompanyIndex: '0',
+    curSupplierIndex: '0',
+    loading: false
+  }
+
+  onLoad(options) {
+    let that = this
+    that.identity = options.id
+
+    wepy.setNavigationBarTitle({
+      title: options.id == 1 ? '管理员登录' : '业主登录'
+    })
+  }
+
+  computed = {}
+  methods = {
+    goLogin(type) {
+      // 选择身份进行登录
+      let that = this
+    },
+    usernameInput(e) {},
+    bindPickerChange: e => {
+      console.log('picker发送选择改变，携带值为', e.detail.value)
+      this.curCompanyIndex = e.detail.value
+      this.$apply()
+    }
+  }
+  events = {}
+  //加载更多
+  onReachBottom() {
+    let that = this
+  }
+}
+</script>
+

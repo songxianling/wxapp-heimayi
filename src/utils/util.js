@@ -81,7 +81,7 @@ function routingStack() {
 // 防止快速点击带来的二次跳转
 let isFast = true;
 
-function xhNavigateTo(url, openType = "") {
+function navigateTo(url, openType = "") {
   if (isFast) {
     isFast = false;
     if (openType == 'redirect') {
@@ -108,5 +108,5 @@ module.exports = {
   vailPhone: vailPhone,
   inArray: inArray,
   routingStack: routingStack,
-  xhNavigateTo: xhNavigateTo
+  navigateTo: navigateTo
 }

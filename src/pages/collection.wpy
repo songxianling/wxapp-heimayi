@@ -1,0 +1,66 @@
+<style lang="less">
+.content-box {
+  .login-box {
+    padding: 300rpx 40rpx;
+    .user-box {
+      width: 100%;
+      padding: 20rpx;
+      text-align: center;
+      box-sizing: border-box;
+      background: linear-gradient(to left, #e98d43, #f2dd14);
+      border-radius: 20rpx;
+      margin-bottom: 60rpx;
+    }
+
+    .admin-box {
+      width: 100%;
+      padding: 20rpx;
+      text-align: center;
+      box-sizing: border-box;
+      background: linear-gradient(to left, #6c66fe, #d28ff8);
+      border-radius: 20rpx;
+    }
+  }
+}
+</style>
+<template>
+  <view class="collection-box">
+    对不起；您没有权限访问此页面
+  </view>
+</template>
+<script>
+import wepy from 'wepy'
+import { wxRequest } from '../utils/wxRequest'
+import tip from '../utils/tip'
+import utils from '../utils/util'
+
+export default class Home extends wepy.page {
+  config = {
+    navigationBarTitleText: '香哈菜谱'
+  }
+  components = {}
+  data = {
+    region: ['广东省', '广州市', '海珠区'],
+    customItem: '全部'
+  }
+
+  onLoad(ops) {
+    let that = this
+  }
+
+  computed = {}
+  methods = {
+    bindRegionChange: e => {
+      console.log('picker发送选择改变，携带值为', e.detail.value)
+      this.region = e.detail.value
+      this.$apply()
+    }
+  }
+  events = {}
+  //加载更多
+  onReachBottom() {
+    let that = this
+  }
+}
+</script>
+
