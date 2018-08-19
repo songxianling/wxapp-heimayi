@@ -1,61 +1,106 @@
 <style lang="less">
 @import '../styles/styleComDef.less';
 .senior-search-box {
-  .item-line {
-      display: flex;
-      justify-content: space-between;
-      padding: 10rpx 20rpx;
-      .s-input {
-        width: 320rpx;
-        height: 60rpx;
-        text-align: center;
-        border: 1px solid @border;
-        border-radius: 10rpx;
-      }
-      .item {
-        width: 100rpx;
-        height: 60rpx;
-        text-align: center;
-        border: 1px solid @border;
-        border-radius: 10rpx;
-        .s-icon {
-          margin-top: 8rpx;
-        }
-      }
-      .search-btn {
-        width: 200rpx;
-      }
-      .item-picker {
-        width: 150rpx;
-        height: 60rpx;
-        line-height: 60rpx;
-        text-align: center;
-        border: 1px solid @border;
-        border-radius: 10rpx;
-        .s-icon {
-          margin-top: 8rpx;
-        }
-      }
+  .senior-header-box {
+    display: inline-block;
+    width: 100%;
+
+    .reset-btn {
+      float: right;
+      width: 100rpx;
+      height: 50rpx;
+      line-height: 50rpx;
+      margin-right: 50rpx;
+      text-align: center;
+      border: 1px solid @border;
     }
+  }
+  .item-panel {
+    position: relative;
+    width: 90%;
+    height: 50rpx;
+    line-height: 50rpx;
+    margin: 0 auto;
+    padding: 24rpx 0;
+    border-bottom: 1px solid #ccc;
+    .l {
+      float: left;
+      text-align: left;
+      min-width: 120rpx;
+      margin-right: 20rpx;
+    }
+    .r {
+      float: left;
+      width: 70%;
+      font-size: 30rpx;
+    }
+    .close-btn {
+      position: absolute;
+      top: 10rpx;
+      right: 30rpx;
+      padding: 20rpx;
+      z-index: 11;
+      box-sizing: border-box;
+    }
+  }
 }
 </style>
 <template>
-  <view class="senior-search-box">
-    <view class="item-line clearfix">
-        <picker class="item-picker" @change="changePicker('houseEstateIndex')" value="{{houseEstateIndex}}" range="{{houseEstateList}}">
-          <view class="picker" wx:if="{{houseEstateIndex}}">{{houseEstateList[houseEstateIndex]}}</view>
-          <view class="picker" wx:else>小区</view>
+  <view class="senior-search-box clearfix">
+    <view class="senior-header-box clearfix">
+      <view class="reset-btn">重置</view>
+    </view>
+    <view class="senior-con-box">
+      <view class="item-panel clearfix">
+        <view class="l">小区</view>
+        <picker class="r input-box" @change="changePicker('curCompanyIndex')" value="{{curCompanyIndex}}" range="{{companyList}}">
+          <view class="picker">{{companyList[curCompanyIndex]}}</view>
         </picker>
-        <picker class="item-picker" @change="changePicker('storeyIndex')" value="{{storeyIndex}}" range="{{storeyList}}">
-          <view class="picker" wx:if="{{storeyIndex}}">{{storeyList[storeyIndex]}}</view>
-          <view class="picker" wx:else>楼栋</view>
-        </picker>
-        <picker class="item-picker" @change="changePicker('doorNumberIndex')" value="{{doorNumberIndex}}" range="{{doorNumberList}}">
-          <view class="picker" wx:if="{{doorNumberIndex}}">{{doorNumberList[doorNumberIndex]}}</view>
-          <view class="picker" wx:else>门牌号</view>
-        </picker>
-        <view class="item-picker">高级检索</view>
+        <icon class="close-btn" type="search" size="20" />
       </view>
+      <view class="item-panel clearfix">
+        <view class="l">楼栋</view>
+        <picker class="r input-box" @change="changePicker('curCompanyIndex')" value="{{curCompanyIndex}}" range="{{companyList}}">
+          <view class="picker">{{companyList[curCompanyIndex]}}</view>
+        </picker>
+        <icon class="close-btn" type="search" size="20" />
+      </view>
+      <view class="item-panel clearfix">
+        <view class="l">单元</view>
+        <picker class="r input-box" @change="changePicker('curCompanyIndex')" value="{{curCompanyIndex}}" range="{{companyList}}">
+          <view class="picker">{{companyList[curCompanyIndex]}}</view>
+        </picker>
+        <icon class="close-btn" type="search" size="20" />
+      </view>
+      <view class="item-panel clearfix">
+        <view class="l">门牌号</view>
+        <picker class="r input-box" @change="changePicker('curCompanyIndex')" value="{{curCompanyIndex}}" range="{{companyList}}">
+          <view class="picker">{{companyList[curCompanyIndex]}}</view>
+        </picker>
+        <icon class="close-btn" type="search" size="20" />
+      </view>
+      <view class="item-panel clearfix">
+        <view class="l">缴费状态</view>
+        <picker class="r input-box" @change="changePicker('curCompanyIndex')" value="{{curCompanyIndex}}" range="{{companyList}}">
+          <view class="picker">{{companyList[curCompanyIndex]}}</view>
+        </picker>
+        <icon class="close-btn" type="search" size="20" />
+      </view>
+      <view class="item-panel clearfix">
+        <view class="l">故障状态</view>
+        <picker class="r input-box" @change="changePicker('curCompanyIndex')" value="{{curCompanyIndex}}" range="{{companyList}}">
+          <view class="picker">{{companyList[curCompanyIndex]}}</view>
+        </picker>
+        <icon class="close-btn" type="search" size="20" />
+      </view>
+      <view class="item-panel clearfix">
+        <view class="l">电量状态</view>
+        <picker class="r input-box" @change="changePicker('curCompanyIndex')" value="{{curCompanyIndex}}" range="{{companyList}}">
+          <view class="picker">{{companyList[curCompanyIndex]}}</view>
+        </picker>
+        <icon class="close-btn" type="search" size="20" />
+      </view>
+    </view>
   </view>
 </template>
 <script>
@@ -70,7 +115,10 @@ export default class SeniorSearch extends wepy.page {
   }
   components = {}
   data = {
-    msg: 'gaoji'
+    companyList: ['公司1', '公司名称2', '公司333'],
+    supplierList: ['供应商1', '供应商2', '供应商3'],
+    curCompanyIndex: '0', // 当前所选公司索引
+    curSupplierIndex: '0' // 当前所选供应商索引
   }
 
   onLoad(ops) {
@@ -79,6 +127,11 @@ export default class SeniorSearch extends wepy.page {
 
   computed = {}
   methods = {
+    changePicker(type, e) {
+      console.log('picker发送选择改变，携带值为', e.detail.value)
+      this[type] = e.detail.value
+      this.$apply()
+    },
     bindRegionChange: e => {
       console.log('picker发送选择改变，携带值为', e.detail.value)
       this.region = e.detail.value

@@ -162,8 +162,7 @@ export default class Home extends wepy.page {
           return
         }
       }
-      console.log(params);
-
+      console.log(params)
     },
     changeInputValue(type, e) {
       this[type] = e.detail.value
