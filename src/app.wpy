@@ -18,7 +18,8 @@ export default class extends wepy.app {
       "pages/home",
       "pages/collection",
       "pages/history",
-      "pages/userLogin"
+      "pages/userLogin",
+      "pages/seniorSearch"
 
     ],
     window: {

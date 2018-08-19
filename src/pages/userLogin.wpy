@@ -21,12 +21,33 @@
       }
     }
   }
-  .door-id-box{
+
+  .item-panel {
     position: relative;
-    .close-btn{
+    width: 90%;
+    height: 50rpx;
+    line-height: 50rpx;
+    margin: 0 auto;
+    padding: 24rpx 0;
+    border-bottom: 1px solid #ccc;
+    .l {
+      float: left;
+      text-align: left;
+      min-width: 120rpx;
+      margin-right: 20rpx;
+    }
+    .r {
+      float: left;
+      width: 70%;
+      font-size: 30rpx;
+    }
+    .close-btn {
       position: absolute;
       top: 10rpx;
       right: 30rpx;
+      padding: 20rpx;
+      z-index: 11;
+      box-sizing: border-box;
     }
   }
   button {
@@ -38,30 +59,41 @@
   <view class="user-login-box">
       <!-- 填写登录信息 -->
       <view class="admin-box" wx:if="{{identity == 1}}">
-        <i-cell title="选择公司" is-link class="select-company-box" i-class="cell-defa-style" >
-          <picker class="r input-box" bindchange="bindPickerChange" value="{{curCompanyIndex}}" range="{{companyList}}">
-            <view class="picker">
-              {{companyList[curCompanyIndex]}}
-            </view>
+        <view class="item-panel clearfix">
+          <view class="l">选择公司</view>
+          <picker class="r input-box" @change="changePicker('curCompanyIndex')" value="{{curCompanyIndex}}" range="{{companyList}}">
+            <view class="picker">{{companyList[curCompanyIndex]}}</view>
           </picker>
-        </i-cell>
-        <i-input value="{{ username }}" title="用户名" placeholder="请填写用户名" />
-        <i-input value="{{ password }}" title="密码" placeholder="请填写密码" type="password"/>
-        <i-button @tap="goLogin" type="info" >登录</i-button>
+          <icon class="close-btn" type="search" size="20" />
+        </view>
+        <view class="item-panel clearfix">
+          <view class="l">阀门ID</view>
+          <input class="r" value="{{ username }}" placeholder="请填写用户名" @change="changeInputValue('username')"/>
+          <icon class="close-btn" type="clear" size="20" wx:if="{{username}}" @tap="removeInputValue('username')" />
+        </view>
+        <view class="item-panel clearfix">
+          <view class="l">密码</view>
+          <input class="r" value="{{ password }}" placeholder="请填写密码" password="true" @change="changeInputValue('password')"/>
+          <icon class="close-btn" type="clear" size="20" wx:if="{{password}}" @tap="removeInputValue('password')" />
+        </view>
+        <i-button @tap="goLogin(1)" type="info" >登录</i-button>
       </view>
       <view class="user-box" wx:else>
-        <i-cell title="供应商" is-link class="select-company-box" i-class="cell-defa-style">
-          <picker class="r input-box" bindchange="bindPickerChange" value="{{curSupplierIndex}}" range="{{supplierList}}">
-            <view class="picker">
-              {{supplierList[curSupplierIndex]}}
-            </view>
+        <view class="item-panel clearfix">
+          <view class="l">供应商</view>
+          <picker class="r input-box" @change="changePicker('curSupplierIndex')" value="{{curSupplierIndex}}" range="{{supplierList}}">
+            <view class="picker">{{supplierList[curSupplierIndex]}}</view>
           </picker>
-        </i-cell>
-        <view class="door-id-box">
-          <i-input value="{{ doorID }}" title="阀门ID" placeholder="请填写阀门ID" />
-          <i-icon  class="close-btn" type="close" size="14" color="#80848f" />
+          <icon class="close-btn" type="search" size="20" />
         </view>
-        <i-button @tap="goLogin" type="info" >登录</i-button>
+        <view class="door-id-box">
+          <view class="item-panel clearfix">
+            <view class="l">阀门ID</view>
+            <input class="r" value="{{ doorId }}" placeholder="请填写阀门ID" @change="changeInputValue('doorId')"/>
+            <icon class="close-btn" type="clear" size="20" wx:if="{{doorId}}" @tap="removeInputValue('doorId')" />
+          </view>
+        </view>
+        <i-button @tap="goLogin(2)" type="info" >登录</i-button>
       </view>
   </view>
 </template>
@@ -76,9 +108,7 @@ export default class Home extends wepy.page {
     navigationBarTitleText: '业主登录',
     usingComponents: {
       'i-button': '../iViewDist/button/index',
-      'i-input': '../iViewDist/input/index',
-      'i-cell': '../iViewDist/cell/index',
-      "i-icon": "../iViewDist/icon/index"
+      'i-toast': '../iViewDist/toast/index'
     }
   }
   components = {}
@@ -86,15 +116,13 @@ export default class Home extends wepy.page {
     identity: 2,
     username: '',
     password: '',
-    doorID:'',
+    doorId: '', // 阀门ID
     showSelectIdBox: true,
     showLoginBox: false,
-    loginId: 1,
     companyList: ['公司1', '公司名称2', '公司333'],
-    supplierList:['供应商1', '供应商2', '供应商3'],
-    curCompanyIndex: '0',
-    curSupplierIndex: '0',
-    loading: false
+    supplierList: ['供应商1', '供应商2', '供应商3'],
+    curCompanyIndex: '0', // 当前所选公司索引
+    curSupplierIndex: '0' // 当前所选供应商索引
   }
 
   onLoad(options) {
@@ -109,13 +137,43 @@ export default class Home extends wepy.page {
   computed = {}
   methods = {
     goLogin(type) {
-      // 选择身份进行登录
+      // 进行登录
       let that = this
+      var params = {}
+      if (type == 1) {
+        if (that.username && that.password) {
+          params = {
+            curCompanyIndex: that.curCompanyIndex,
+            username: that.username,
+            password: that.password
+          }
+        } else {
+          tip.alert('信息不完整')
+          return
+        }
+      } else {
+        if (that.doorId) {
+          params = {
+            curSupplierIndex: that.curSupplierIndex,
+            doorId: that.doorId
+          }
+        } else {
+          tip.alert('信息不完整')
+          return
+        }
+      }
+      console.log(params);
+
     },
-    usernameInput(e) {},
-    bindPickerChange: e => {
+    changeInputValue(type, e) {
+      this[type] = e.detail.value
+    },
+    removeInputValue(type) {
+      this[type] = ''
+    },
+    changePicker(type, e) {
       console.log('picker发送选择改变，携带值为', e.detail.value)
-      this.curCompanyIndex = e.detail.value
+      this[type] = e.detail.value
       this.$apply()
     }
   }

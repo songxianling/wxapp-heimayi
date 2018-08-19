@@ -1,17 +1,7 @@
 <style lang="less">
 @import '../styles/styleComDef.less';
-.home-box {
-  .login-out-box {
-    padding: 300rpx 40rpx;
-    .select-identity-box {
-      // display: none;
-      button {
-        margin-bottom: 100rpx;
-      }
-    }
-  }
-  .search-select-box {
-    .item-line {
+.senior-search-box {
+  .item-line {
       display: flex;
       justify-content: space-between;
       padding: 10rpx 20rpx;
@@ -47,30 +37,11 @@
         }
       }
     }
-  }
 }
 </style>
 <template>
-  <view class="home-box">
-    <view class="login-out-box" wx:if="{{userInfo}}">
-      <!-- 身份选择 -->
-      <view class="select-identity-box">
-        <i-button @tap="goFillInInfo(1)" type="success">我是管理员</i-button>
-        <i-button @tap="goFillInInfo(2)" type="primary">我是业主</i-button>
-      </view>
-    </view>
-    <!-- 搜索选项 -->
-    <view class="search-select-box">
-      <view class="item-line clearfix">
-        <input class="s-input" value="{{ doorId }}" placeholder="请填写阀门ID" @change="changeInputValue('doorId')"/>
-        <view class="item">
-          <icon class="s-icon" type="info" size="22" color="rgb(0,255,255)"/>
-        </view>
-        <view class="item search-btn">
-          <icon class="s-icon" type="search" size="22" color="#2db7f5"/>
-        </view>
-      </view>
-      <view class="item-line clearfix">
+  <view class="senior-search-box">
+    <view class="item-line clearfix">
         <picker class="item-picker" @change="changePicker('houseEstateIndex')" value="{{houseEstateIndex}}" range="{{houseEstateList}}">
           <view class="picker" wx:if="{{houseEstateIndex}}">{{houseEstateList[houseEstateIndex]}}</view>
           <view class="picker" wx:else>小区</view>
@@ -85,7 +56,6 @@
         </picker>
         <view class="item-picker">高级检索</view>
       </view>
-    </view>
   </view>
 </template>
 <script>
@@ -94,23 +64,13 @@ import { wxRequest } from '../utils/wxRequest'
 import tip from '../utils/tip'
 import utils from '../utils/util'
 
-export default class Home extends wepy.page {
+export default class SeniorSearch extends wepy.page {
   config = {
-    navigationBarTitleText: '香哈菜谱',
-    usingComponents: {
-      'i-button': '../iViewDist/button/index'
-    }
+    navigationBarTitleText: '高级搜索'
   }
-
   components = {}
   data = {
-    userInfo: '1',
-    houseEstateList: ['小区1', '一共5个字', '一共8个字8个字啊'],
-    storeyList: ['楼栋1', '楼栋2', '楼栋3'],
-    doorNumberList: ['门牌号1', '门牌号2', '门牌号3'],
-    houseEstateIndex: '',
-    storeyIndex: '',
-    doorNumberIndex: '',
+    msg: 'gaoji'
   }
 
   onLoad(ops) {
@@ -119,16 +79,9 @@ export default class Home extends wepy.page {
 
   computed = {}
   methods = {
-    goFillInInfo(type) {
-      // 选择身份进行登录
-      let that = this
-      utils.navigateTo(`/pages/userLogin?id=${type}`)
-    },
-    changeInputValue(type, e) {
-      this[type] = e.detail.value
-    },
-    changePicker(type, e) {
-      this[type] = e.detail.value
+    bindRegionChange: e => {
+      console.log('picker发送选择改变，携带值为', e.detail.value)
+      this.region = e.detail.value
       this.$apply()
     }
   }
