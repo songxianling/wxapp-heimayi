@@ -1,0 +1,272 @@
+<style lang="less">
+.s-slider-box {
+  width: 100%;
+  position: relative;
+  .slider-body {
+    height: 2rpx;
+    background-color: #ddd;
+    position: relative;
+  }
+
+  .body {
+    bottom: 60rpx;
+    background-color: #19896f;
+    z-index: 0.3;
+  }
+
+  .left {
+    bottom: 58rpx;
+    z-index: 0.1;
+  }
+
+  .right {
+    z-index: 0.2;
+    bottom: 62rpx;
+  }
+
+  .slider-item {
+    border-radius: 50%;
+    width: 40rpx;
+    height: 40rpx;
+    background-color: #19896f;
+    z-index: 2;
+  }
+
+  .min {
+    position: relative;
+    top: 0rpx;
+    /*left: 100rpx;*/
+  }
+
+  .max {
+    position: relative;
+    bottom: 40rpx;
+    /*left: 600rpx;*/
+  }
+  .hide {
+    display: none;
+  }
+}
+</style>
+<template>
+  <view class="s-slider-box {{hideOption}}">
+    <view class="slider-item min" style="left:{{leftValue}}rpx;background-color:{{blockColor}};" catchtouchmove="_minMove"></view>
+    <view class="slider-item max" style="left:{{rightValue}}rpx;background-color:{{blockColor}};" catchtouchmove="_maxMove"></view>
+
+    <view class="slider-body left" style="left:{{sliderLength}}rpx; width:{{leftValue}}rpx;background-color:{{backgroundColor}};"></view>
+    <view class="slider-body body" style="left:{{leftValue}}rpx; width:{{rightValue-leftValue}}rpx;background-color:{{selectedColor}};"></view>
+    <view class="slider-body right" style="left:{{rightValue}}rpx; width:{{totalLength - rightValue}}rpx;background-color:{{backgroundColor}};"></view>
+    <slot></slot>
+  </view>
+</template>
+<script>
+import wepy from 'wepy'
+import { wxRequest } from '../utils/wxRequest'
+import tip from '../utils/tip'
+
+export default class sSlider extends wepy.component {
+  props = {
+    min: {
+      type: Number
+    },
+    max: {
+      type: Number
+    },
+    step: {
+      type: Number
+    },
+    minValue: {
+      type: Number
+    },
+    maxValue: {
+      type: Number
+    },
+    blockColor: {
+      type: String
+    },
+    backgroundColor: {
+      type: String
+    },
+    selectedColor: {
+      type: String
+    }
+  }
+  data = {
+    min: 0,
+    max: 10000,
+    leftValue: 0,
+    rightValue: '不限',
+    totalLength: 0,
+    bigLength: 0,
+    ratio: 0.5,
+    sliderLength: 40,
+    containerLeft: 0, //标识整个组件，距离屏幕左边的距离
+    hideOption: '' //初始状态为显示组件
+  }
+
+  onLoad(ops) {
+    let that = this
+    // this.wxPromisify()
+    var getSystemInfo = that.wxPromisify(wx.getSystemInfo)
+    const queryContainer = that.wxPromisify(
+      wx
+        .createSelectorQuery()
+        .in(this)
+        .select('.container').boundingClientRect
+    )
+    that.wxPromisify(wx.getSystemInfo)()
+      .then(res => {
+        let ratio = res.windowWidth / 750
+        that.setData({
+          ratio: ratio
+        })
+      })
+      .then(() => {
+        var query = wx.createSelectorQuery().in(this)
+        query
+          .select('.container')
+          .boundingClientRect(function(res) {
+            that.setData({
+              totalLength: res.width / that.data.ratio - that.data.sliderLength,
+              bigLength:
+                res.width / that.data.ratio - that.data.sliderLength * 2,
+              rightValue: res.width / that.data.ratio - that.data.sliderLength,
+              containerLeft: res.left / that.data.ratio
+            })
+
+            /**
+             * 设置初始滑块位置
+             */
+            that._propertyLeftValueChange()
+            that._propertyRightValueChange()
+          })
+          .exec()
+      })
+  }
+  wxPromisify(fn) {
+    return function(obj = {}) {
+      return new Promise((resolve, reject) => {
+        obj.success = function(res) {
+          resolve(res)
+        }
+
+        obj.fail = function(res) {
+          reject(res)
+        }
+
+        fn(obj)
+      })
+    }
+  }
+  methods = {
+    /**
+     * 设置左边滑块的值
+     */
+    _propertyLeftValueChange: function() {
+      let minValue = this.data.minValue / this.data.max * this.data.bigLength
+      let min = this.data.min / this.data.max * this.data.bigLength
+      this.setData({
+        leftValue: minValue - min
+      })
+    },
+
+    /**
+     * 设置右边滑块的值
+     */
+    _propertyRightValueChange: function() {
+      let right =
+        this.data.maxValue / this.data.max * this.data.bigLength +
+        this.data.sliderLength
+      this.setData({
+        rightValue: right
+      })
+    },
+    /**
+     * 左边滑块滑动
+     */
+    _minMove: function(e) {
+      let pagex =
+        e.changedTouches[0].pageX / this.data.ratio -
+        this.data.containerLeft -
+        this.data.sliderLength / 2
+
+      if (pagex + this.data.sliderLength >= this.data.rightValue) {
+        pagex = this.data.rightValue - this.data.sliderLength
+      } else if (pagex <= 0) {
+        pagex = 0
+      }
+
+      this.setData({
+        leftValue: pagex
+      })
+
+      let lowValue = parseInt(
+        pagex / this.data.bigLength * parseInt(this.data.max) + this.data.min
+      )
+      var myEventDetail = { lowValue: lowValue }
+      console.log(myEventDetail);
+
+      this.$emit('lowValueChange', myEventDetail)
+    },
+
+    /**
+     * 右边滑块滑动
+     */
+    _maxMove: function(e) {
+      let pagex =
+        e.changedTouches[0].pageX / this.data.ratio -
+        this.data.containerLeft -
+        this.data.sliderLength / 2
+      if (pagex <= this.data.leftValue + this.data.sliderLength) {
+        pagex = this.data.leftValue + this.data.sliderLength
+      } else if (pagex >= this.data.totalLength) {
+        pagex = this.data.totalLength
+      }
+
+      this.setData({
+        rightValue: pagex
+      })
+
+      pagex = pagex - this.data.sliderLength
+      console.log(this.data.bigLength,this.data.max);
+      let heighValue = parseInt(pagex / 2 * this.data.max)
+
+      var myEventDetail = { heighValue: heighValue }
+
+      this.$emit('heighValueChange', myEventDetail)
+    },
+
+    /**
+     * 隐藏组件
+     */
+    hide: function() {
+      this.setData({
+        hideOption: 'hide'
+      })
+    },
+    /**
+     * 显示组件
+     */
+    show: function() {
+      this.setData({
+        hideOption: ''
+      })
+    },
+    /**
+     * 重置
+     */
+    reset: function() {
+      this.setData({
+        rightValue: this.data.totalLength,
+        leftValue: 0
+      })
+    }
+  }
+  events = {}
+  //加载更多
+  onReachBottom() {
+    let that = this
+  }
+}
+</script>
+

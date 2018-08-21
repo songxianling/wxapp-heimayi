@@ -1,124 +1,39 @@
 <style lang="less">
 @import '../styles/styleComDef.less';
-.senior-search-box {
-  .senior-header-box {
-    display: inline-block;
-    width: 100%;
-
-    .reset-btn {
-      float: right;
-      width: 100rpx;
-      height: 50rpx;
-      line-height: 50rpx;
-      margin-right: 50rpx;
-      text-align: center;
-      border: 1px solid @border;
-    }
-  }
-  .item-panel {
-    position: relative;
-    width: 90%;
-    height: 50rpx;
-    line-height: 50rpx;
-    margin: 0 auto;
-    padding: 24rpx 0;
-    border-bottom: 1px solid #ccc;
-    .l {
-      float: left;
-      text-align: left;
-      min-width: 120rpx;
-      margin-right: 20rpx;
-    }
-    .r {
-      float: left;
-      width: 70%;
-      font-size: 30rpx;
-    }
-    .close-btn {
-      position: absolute;
-      top: 10rpx;
-      right: 30rpx;
-      padding: 20rpx;
-      z-index: 11;
-      box-sizing: border-box;
-    }
-  }
+.zy-slider {
+  margin: 5%;
 }
 </style>
 <template>
-  <view class="senior-search-box clearfix">
-    <view class="senior-header-box clearfix">
-      <view class="reset-btn">重置</view>
-    </view>
-    <view class="senior-con-box">
-      <view class="item-panel clearfix">
-        <view class="l">小区</view>
-        <picker class="r input-box" @change="changePicker('curCompanyIndex')" value="{{curCompanyIndex}}" range="{{companyList}}">
-          <view class="picker">{{companyList[curCompanyIndex]}}</view>
-        </picker>
-        <icon class="close-btn" type="search" size="20" />
-      </view>
-      <view class="item-panel clearfix">
-        <view class="l">楼栋</view>
-        <picker class="r input-box" @change="changePicker('curCompanyIndex')" value="{{curCompanyIndex}}" range="{{companyList}}">
-          <view class="picker">{{companyList[curCompanyIndex]}}</view>
-        </picker>
-        <icon class="close-btn" type="search" size="20" />
-      </view>
-      <view class="item-panel clearfix">
-        <view class="l">单元</view>
-        <picker class="r input-box" @change="changePicker('curCompanyIndex')" value="{{curCompanyIndex}}" range="{{companyList}}">
-          <view class="picker">{{companyList[curCompanyIndex]}}</view>
-        </picker>
-        <icon class="close-btn" type="search" size="20" />
-      </view>
-      <view class="item-panel clearfix">
-        <view class="l">门牌号</view>
-        <picker class="r input-box" @change="changePicker('curCompanyIndex')" value="{{curCompanyIndex}}" range="{{companyList}}">
-          <view class="picker">{{companyList[curCompanyIndex]}}</view>
-        </picker>
-        <icon class="close-btn" type="search" size="20" />
-      </view>
-      <view class="item-panel clearfix">
-        <view class="l">缴费状态</view>
-        <picker class="r input-box" @change="changePicker('curCompanyIndex')" value="{{curCompanyIndex}}" range="{{companyList}}">
-          <view class="picker">{{companyList[curCompanyIndex]}}</view>
-        </picker>
-        <icon class="close-btn" type="search" size="20" />
-      </view>
-      <view class="item-panel clearfix">
-        <view class="l">故障状态</view>
-        <picker class="r input-box" @change="changePicker('curCompanyIndex')" value="{{curCompanyIndex}}" range="{{companyList}}">
-          <view class="picker">{{companyList[curCompanyIndex]}}</view>
-        </picker>
-        <icon class="close-btn" type="search" size="20" />
-      </view>
-      <view class="item-panel clearfix">
-        <view class="l">电量状态</view>
-        <picker class="r input-box" @change="changePicker('curCompanyIndex')" value="{{curCompanyIndex}}" range="{{companyList}}">
-          <view class="picker">{{companyList[curCompanyIndex]}}</view>
-        </picker>
-        <icon class="close-btn" type="search" size="20" />
-      </view>
-    </view>
-  </view>
+  <view class="zy-slider">
+    <view class="top">min 0 max 100</view>
+    <view class="des">{{low}}%-{{heigh}}%</view>
+    <!-- <TwoWaySlider minValue="0" maxValue="100" min="0" max="100" @lowValueChange.user="lowValueChangeAction"
+              @heighValueChange.user="heighValueChangeAction"></TwoWaySlider> -->
+    <zy-slider minValue="0" maxValue="100" min="0" max="100" @lowValueChange="lowValueChangeAction"
+                @heighValueChange="heighValueChangeAction" />
+</view>
 </template>
 <script>
 import wepy from 'wepy'
 import { wxRequest } from '../utils/wxRequest'
 import tip from '../utils/tip'
 import utils from '../utils/util'
+import TwoWaySlider from '../components/sTwoWaySlider'
 
 export default class SeniorSearch extends wepy.page {
   config = {
-    navigationBarTitleText: '高级搜索'
+    navigationBarTitleText: '高级搜索',
+    usingComponents: {
+      'zy-slider': '../components/zyslider/zyslider'
+    }
   }
-  components = {}
+  components = {
+    TwoWaySlider: TwoWaySlider
+  }
   data = {
-    companyList: ['公司1', '公司名称2', '公司333'],
-    supplierList: ['供应商1', '供应商2', '供应商3'],
-    curCompanyIndex: '0', // 当前所选公司索引
-    curSupplierIndex: '0' // 当前所选供应商索引
+    low: 0,
+    heigh: 100,
   }
 
   onLoad(ops) {
@@ -136,7 +51,36 @@ export default class SeniorSearch extends wepy.page {
       console.log('picker发送选择改变，携带值为', e.detail.value)
       this.region = e.detail.value
       this.$apply()
-    }
+    },
+    lowValueChangeAction: function(e) {
+      console.log(2);
+      this.low = e.detail.lowValue
+      this.$apply()
+      // this.setData({
+      //   low: e.detail.lowValue
+      // })
+    },
+
+    heighValueChangeAction: function(e) {
+      console.log(1);
+      this.heigh = e.detail.heighValue
+      this.$apply()
+      // this.setData({
+      //   heigh: e.detail.heighValue
+      // })
+    },
+
+    // lowValueChangeAction1: function(e) {
+    //   this.setData({
+    //     low1: e.detail.lowValue
+    //   })
+    // },
+
+    // heighValueChangeAction1: function(e) {
+    //   this.setData({
+    //     heigh1: e.detail.heighValue
+    //   })
+    // }
   }
   events = {}
   //加载更多

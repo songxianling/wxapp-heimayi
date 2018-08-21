@@ -1,0 +1,133 @@
+<style lang="less">
+@import '../styles/styleComDef.less';
+.detail-page-box {
+  width: 90%;
+  margin: 100rpx auto 0;
+  .item-msg {
+    border: 1px solid @border;
+    margin-bottom: 20rpx;
+    .name {
+      display: inline-block;
+      width: 30%;
+      height: 70rpx;
+      line-height: 70rpx;
+      padding-left: 10rpx;
+      box-sizing: border-box;
+      background: #6aa7e9;
+      color: #333;
+    }
+    .con {
+      position: relative;
+      display: inline-block;
+      width: 70%;
+      height: 70rpx;
+      line-height: 70rpx;
+      padding-left: 10rpx;
+      box-sizing: border-box;
+      background: #fff;
+      color: #333;
+      .explain{
+        position: absolute;
+        top: 0;
+        right: 70rpx;
+        height: 60rpx;
+        padding: 6rpx;
+        border-left: 1px solid @border;
+      }
+      image {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 60rpx;
+        height: 60rpx;
+        padding: 6rpx;
+        border-left: 1px solid @border;
+      }
+    }
+  }
+}
+</style>
+<template>
+  <view class="detail-page-box">
+    <view class="item-msg">
+      <view class="name">安装位置:</view>
+      <view class="con">泰和小区--1号楼-1-101</view>
+    </view>
+    <view class="item-msg">
+      <view class="name">设备 ID:</view>
+      <view class="con">33333333333333</view>
+    </view>
+    <view class="item-msg">
+      <view class="name">回水温度:</view>
+      <view class="con">
+        25’C
+        <image src="../images/temperature-icon.png"></image>
+      </view>
+    </view>
+    <view class="item-msg">
+      <view class="name">缴费状态:</view>
+      <view class="con">
+        已缴费
+        <image src="../images/arrearage-icon.png"></image>
+      </view>
+    </view>
+    <view class="item-msg">
+      <view class="name">故障状态:</view>
+      <view class="con">
+        无
+        <image src="../images/fault-icon.png"></image>
+      </view>
+    </view>
+    <view class="item-msg">
+      <view class="name">电量状态:</view>
+      <view class="con">
+        正常
+        <view class="explain">100%</view>
+        <image src="../images/power-icon.png"></image>
+      </view>
+    </view>
+    <view class="item-msg">
+      <view class="name">阀门开度:</view>
+      <view class="con">70%</view>
+    </view>
+    <view class="item-msg">
+      <view class="name">刷新时间:</view>
+      <view class="con">2018-7-10 22:31:59</view>
+    </view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy'
+import { wxRequest } from '../utils/wxRequest'
+import tip from '../utils/tip'
+import utils from '../utils/util'
+
+export default class Detail extends wepy.page {
+  config = {
+    navigationBarTitleText: '设备详情'
+  }
+  components = {}
+  data = {}
+
+  onLoad(options) {
+    let that = this
+    console.log(options.id);
+
+  }
+
+  computed = {}
+  methods = {
+    bindRegionChange: e => {
+      console.log('picker发送选择改变，携带值为', e.detail.value)
+      this.region = e.detail.value
+      this.$apply()
+    }
+  }
+  events = {}
+  //加载更多
+  onReachBottom() {
+    let that = this
+  }
+}
+</script>
+

@@ -1,31 +1,71 @@
 <style lang="less">
-.content-box {
-  .login-box {
-    padding: 300rpx 40rpx;
-    .user-box {
-      width: 100%;
-      padding: 20rpx;
-      text-align: center;
-      box-sizing: border-box;
-      background: linear-gradient(to left, #e98d43, #f2dd14);
-      border-radius: 20rpx;
-      margin-bottom: 60rpx;
-    }
+@import '../styles/styleComDef.less';
+.history-page-box {
+  /*列表*/
+  .history-list {
+    width: 95%;
+    margin: 20rpx auto 0;
+    background-color: #ffffff;
+    font-size: 32rpx;
+    .item {
+      padding: 20rpx 10rpx;
+      margin-bottom: 20rpx;
+      border-bottom: 1rpx solid #d6d6d6;
+      background-color: #ffffff;
+      border-radius: 6rpx;
+      box-shadow: 0rpx 4rpx 10rpx #333;
 
-    .admin-box {
-      width: 100%;
-      padding: 20rpx;
-      text-align: center;
-      box-sizing: border-box;
-      background: linear-gradient(to left, #6c66fe, #d28ff8);
-      border-radius: 20rpx;
+      .right-box {
+        padding-right: 6rpx;
+        .name {
+          height: 60rpx;
+          line-height: 60rpx;
+          // border: 1px solid @border;
+          margin-bottom: 10rpx;
+        }
+        .bottom-box {
+          display: flex;
+          display: -webkit-flex;
+          justify-content: flex-end;
+          box-sizing: border-box;
+
+          .item-img-box {
+            display: inline-block;
+            height: 60rpx;
+            line-height: 60rpx;
+            padding: 0 26rpx;
+            border: 1px solid @border;
+            box-sizing: border-box;
+            margin-left: 20rpx;
+            font-size: 24rpx;
+
+            view {
+              display: inline-block;
+              height: 50rpx;
+              line-height: 50rpx;
+            }
+          }
+        }
+      }
     }
   }
 }
 </style>
 <template>
-  <view class="history-box">
-    对不起；您没有权限访问此页面
+  <view class="history-page-box">
+    <view class="history-list">
+      <view class='item flex_center' wx:for="{{equipmentList}}" wx:key="{{index}}" data-id="{{index}}" @tap='select'>
+          <!-- 实际内容 -->
+          <view class='right-box'>
+            <view class='name'>{{item.house}}</view>
+            <view class='bottom-box'>
+              <view class="temperature item-img-box">老李</view>
+              <view class="fault item-img-box">调节至70%</view>
+              <view class="arrearage item-img-box">2018-7-10 22:20:59</view>
+            </view>
+          </view>
+      </view>
+    </view>
   </view>
 </template>
 <script>
@@ -36,12 +76,144 @@ import utils from '../utils/util'
 
 export default class Home extends wepy.page {
   config = {
-    navigationBarTitleText: '香哈菜谱'
+    navigationBarTitleText: '历史记录'
   }
   components = {}
   data = {
-    region: ['广东省', '广州市', '海珠区'],
-    customItem: '全部'
+    equipmentList: [
+      {
+        id: '1',
+        house:'泰和小区-100号楼-2-201',
+        collection: false,
+        temperature: 33,
+        fault: false,
+        arrearage: false,
+        doorModel: [
+          '关阀',
+          '10%',
+          '20%',
+          '30%',
+          '40%',
+          '50%',
+          '60%',
+          '70%',
+          '80%',
+          '90%',
+          '100%'
+        ],
+        doorModelIndex: '0'
+      },
+      {
+        id: '2',
+        house:'东方小区-003号楼-1-701',
+        collection: true,
+        temperature: 13,
+        fault: true,
+        arrearage: false,
+        doorModel: [
+          '关阀',
+          '10%',
+          '20%',
+          '30%',
+          '40%',
+          '50%',
+          '60%',
+          '70%',
+          '80%',
+          '90%',
+          '100%'
+        ],
+        doorModelIndex: '0'
+      },
+      {
+        id: '3',
+        house:'胜利家园-5号楼-101',
+        collection: false,
+        temperature: 53,
+        fault: true,
+        arrearage: true,
+        doorModel: [
+          '关阀',
+          '10%',
+          '20%',
+          '30%',
+          '40%',
+          '50%',
+          '60%',
+          '70%',
+          '80%',
+          '90%',
+          '100%'
+        ],
+        doorModelIndex: '9'
+      },
+      {
+        id: '4',
+        house:'晨光家园-111号楼-1-2201',
+        collection: true,
+        temperature: 22,
+        fault: false,
+        arrearage: true,
+        doorModel: [
+          '关阀',
+          '10%',
+          '20%',
+          '30%',
+          '40%',
+          '50%',
+          '60%',
+          '70%',
+          '80%',
+          '90%',
+          '100%'
+        ],
+        doorModelIndex: '6'
+      },
+      {
+        id: '5',
+        house:'温都水城-100号楼-2-201',
+        collection: true,
+        temperature: 77,
+        fault: true,
+        arrearage: true,
+        doorModel: [
+          '关阀',
+          '10%',
+          '20%',
+          '30%',
+          '40%',
+          '50%',
+          '60%',
+          '70%',
+          '80%',
+          '90%',
+          '100%'
+        ],
+        doorModelIndex: '7'
+      },
+      {
+        id: '6',
+        house:'天之南理-3号楼-101',
+        collection: false,
+        temperature: 3,
+        fault: true,
+        arrearage: false,
+        doorModel: [
+          '关阀',
+          '10%',
+          '20%',
+          '30%',
+          '40%',
+          '50%',
+          '60%',
+          '70%',
+          '80%',
+          '90%',
+          '100%'
+        ],
+        doorModelIndex: '3'
+      }
+    ]
   }
 
   onLoad(ops) {

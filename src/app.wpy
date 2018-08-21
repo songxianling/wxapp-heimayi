@@ -19,7 +19,8 @@ export default class extends wepy.app {
       "pages/collection",
       "pages/history",
       "pages/userLogin",
-      "pages/seniorSearch"
+      "pages/seniorSearch",
+      "pages/detail",
 
     ],
     window: {
@@ -54,9 +55,6 @@ export default class extends wepy.app {
           selectedIconPath: "images/history-active-icon.png"
         }
       ]
-    },
-    usingComponents: {
-      'i-panel': './iViewDist/panel/inde'
     },
     userInfo: ""
   };

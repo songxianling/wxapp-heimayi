@@ -5,7 +5,21 @@
     padding: 300rpx 40rpx;
     .select-identity-box {
       // display: none;
-      button {
+      .btn {
+        height: 96rpx;
+        line-height: 96rpx;
+        text-align: center;
+        border-radius: 6rpx;
+        color: #fff;
+        box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+      }
+      .admin-btn {
+        background: #19be6b;
+      }
+      .user-btn {
+        background: #2d8cf0;
+      }
+      view {
         margin-bottom: 100rpx;
       }
     }
@@ -48,20 +62,170 @@
       }
     }
   }
+  .senior-search-box {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1002;
+    background: #fff;
+    transform: translateY(150%);
+    transition: all 0.4s ease;
+    width: 100%;
+    height: 100vh;
+    &.pop-show {
+      transform: translateY(0);
+      padding: 0;
+      box-sizing: border-box;
+    }
+    .senior-header-box {
+      height: 100rpx;
+      padding: 0 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      .title {
+        text-align: center;
+      }
+      .reset-btn {
+        // float: right;
+        width: 100rpx;
+        height: 50rpx;
+        line-height: 50rpx;
+        text-align: center;
+        border: 1px solid @border;
+      }
+    }
+    .go-search-btn {
+      width: 90%;
+      height: 96rpx;
+      line-height: 96rpx;
+      margin: 60rpx auto 0;
+      text-align: center;
+      border-radius: 6rpx;
+      color: #fff;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+      background: #2db7f5;
+    }
+  }
+  .item-panel {
+    position: relative;
+    width: 90%;
+    line-height: 50rpx;
+    margin: 0 auto;
+    padding: 24rpx 0;
+    border-bottom: 1px solid #ccc;
+    .l {
+      float: left;
+      text-align: left;
+      min-width: 120rpx;
+      margin-right: 20rpx;
+    }
+    .r {
+      position: relative;
+      float: left;
+      width: 78%;
+      font-size: 30rpx;
+      .arrow-icon {
+        display: inline-block;
+        position: absolute;
+        top: 5rpx;
+        right: 5rpx;
+        width: 64rpx;
+        height: 64rpx;
+      }
+      .slider-box {
+        view {
+          font-size: 26rpx;
+        }
+        .slider {
+          margin: 0 30rpx;
+        }
+      }
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10rpx;
+      right: 30rpx;
+      padding: 20rpx;
+      z-index: 11;
+      box-sizing: border-box;
+    }
+  }
+  .equipment-list {
+    width: 95%;
+    margin: 0 auto;
+    background-color: #ffffff;
+    font-size: 32rpx;
+    .item {
+      padding: 20rpx 10rpx;
+      margin-bottom: 20rpx;
+      border-bottom: 1rpx solid #d6d6d6;
+      background-color: #ffffff;
+      border-radius: 6rpx;
+      box-shadow: 0rpx 4rpx 10rpx #333;
+      .right-box {
+        padding-right: 6rpx;
+        .name {
+          position: relative;
+          height: 60rpx;
+          line-height: 60rpx;
+          // border: 1px solid @border;
+          margin-bottom: 10rpx;
+          .collection-icon {
+            position: absolute;
+            top: 4rpx;
+            right: 4rpx;
+            width: 50rpx;
+            height: 50rpx;
+          }
+        }
+        .bottom-box {
+          display: flex;
+          display: -webkit-flex;
+          justify-content: flex-end;
+          box-sizing: border-box;
+          // padding-right: 10%;
+          .item-img-box {
+            display: inline-block;
+            height: 60rpx;
+            line-height: 60rpx;
+            padding: 0 26rpx;
+            border: 1px solid @border;
+            box-sizing: border-box;
+            margin-left: 20rpx;
+            image {
+              display: inline-block;
+              width: 40rpx;
+              height: 40rpx;
+              vertical-align: middle;
+            }
+            view {
+              display: inline-block;
+              height: 50rpx;
+              line-height: 50rpx;
+            }
+          }
+        }
+      }
+    }
+  }
 }
 </style>
 <template>
   <view class="home-box">
-    <view class="login-out-box" wx:if="{{userInfo}}">
+    <view class="login-out-box" wx:if="{{!userInfo}}">
       <!-- 身份选择 -->
       <view class="select-identity-box">
-        <i-button @tap="goFillInInfo(1)" type="success">我是管理员</i-button>
-        <i-button @tap="goFillInInfo(2)" type="primary">我是业主</i-button>
+        <view class="admin-btn btn" @tap="goFillInInfo(1)">我是管理员</view>
+        <view class="user-btn btn" @tap="goFillInInfo(2)">我是业主</view>
       </view>
     </view>
     <!-- 搜索选项 -->
-    <view class="search-select-box">
-      <view class="item-line clearfix">
+    <view class="search-select-box" wx:if="{{userInfo}}">
+      <view class="item-line">
         <input class="s-input" value="{{ doorId }}" placeholder="请填写阀门ID" @change="changeInputValue('doorId')"/>
         <view class="item">
           <icon class="s-icon" type="info" size="22" color="rgb(0,255,255)"/>
@@ -70,7 +234,7 @@
           <icon class="s-icon" type="search" size="22" color="#2db7f5"/>
         </view>
       </view>
-      <view class="item-line clearfix">
+      <view class="item-line">
         <picker class="item-picker" @change="changePicker('houseEstateIndex')" value="{{houseEstateIndex}}" range="{{houseEstateList}}">
           <view class="picker" wx:if="{{houseEstateIndex}}">{{houseEstateList[houseEstateIndex]}}</view>
           <view class="picker" wx:else>小区</view>
@@ -83,7 +247,99 @@
           <view class="picker" wx:if="{{doorNumberIndex}}">{{doorNumberList[doorNumberIndex]}}</view>
           <view class="picker" wx:else>门牌号</view>
         </picker>
-        <view class="item-picker">高级检索</view>
+        <view class="item-picker" @tap="handleSeniorSearch">高级检索</view>
+      </view>
+    </view>
+    <!-- 高级检索弹窗 -->
+    <view class="senior-search-box clearfix {{ showSeniorSearchPop ? 'pop-show' : '' }}">
+      <view class="senior-header-box">
+        <icon type="clear" size="20" @tap="handleSeniorSearch"></icon>
+        <view class="title">高级搜索</view>
+        <view class="reset-btn">重置</view>
+      </view>
+      <view class="senior-con-box">
+        <view class="item-panel clearfix">
+          <view class="l">小区</view>
+          <picker class="r input-box" @change="changePicker('curCompanyIndex')" value="{{curCompanyIndex}}" range="{{companyList}}">
+            <view class="picker">{{companyList[curCompanyIndex]}}</view>
+            <image class="arrow-icon" src="../images/arrow-bottom-icon.png"></image>
+          </picker>
+        </view>
+        <view class="item-panel clearfix">
+          <view class="l">楼栋</view>
+          <picker class="r input-box" @change="changePicker('curCompanyIndex')" value="{{curCompanyIndex}}" range="{{companyList}}">
+            <view class="picker">{{companyList[curCompanyIndex]}}</view>
+          <image class="arrow-icon" src="../images/arrow-bottom-icon.png"></image>
+          </picker>
+        </view>
+        <view class="item-panel clearfix">
+          <view class="l">门牌号</view>
+          <picker class="r input-box" @change="changePicker('curCompanyIndex')" value="{{curCompanyIndex}}" range="{{companyList}}">
+            <view class="picker">{{companyList[curCompanyIndex]}}</view>
+          <image class="arrow-icon" src="../images/arrow-bottom-icon.png"></image>
+          </picker>
+        </view>
+        <view class="item-panel clearfix">
+          <view class="l">阀门开度</view>
+          <view class="r input-box">
+            <zy-slider minValue="{{low}}" maxValue="{{heigh}}" min="0" max="100" @lowValueChange="lowValueChangeAction"
+                @heighValueChange="heighValueChangeAction" />
+            <view class="des">{{low}}%-{{heigh}}%</view>
+          </view>
+          </picker>
+        </view>
+        <view class="item-panel clearfix">
+          <view class="l">缴费状态</view>
+          <picker class="r input-box" @change="changePicker('curCompanyIndex')" value="{{curCompanyIndex}}" range="{{companyList}}">
+            <view class="picker">{{companyList[curCompanyIndex]}}</view>
+          <image class="arrow-icon" src="../images/arrow-bottom-icon.png"></image>
+          </picker>
+        </view>
+        <view class="item-panel clearfix">
+          <view class="l">故障状态</view>
+          <picker class="r input-box" @change="changePicker('curCompanyIndex')" value="{{curCompanyIndex}}" range="{{companyList}}">
+            <view class="picker">{{companyList[curCompanyIndex]}}</view>
+          <image class="arrow-icon" src="../images/arrow-bottom-icon.png"></image>
+          </picker>
+        </view>
+        <view class="item-panel clearfix">
+          <view class="l">电量状态</view>
+          <picker class="r input-box" @change="changePicker('curCompanyIndex')" value="{{curCompanyIndex}}" range="{{companyList}}">
+            <view class="picker">{{companyList[curCompanyIndex]}}</view>
+          <image class="arrow-icon" src="../images/arrow-bottom-icon.png"></image>
+          </picker>
+        </view>
+      </view>
+      <!-- 高级检索按钮 -->
+      <view class="go-search-btn">检索</view>
+    </view>
+    <view class="equipment-list">
+      <view class='item flex_center' wx:for="{{equipmentList}}" wx:key="{{item.index}}">
+          <!-- 实际内容 -->
+          <view class='right-box'>
+            <view class='name' @tap="navTo('/pages/detail?id={{item.id}}')">
+              泰和小区--1号楼-1-101
+              <image wx:if="{{item.collection}}" src="../images/collection-icon.png" class="collection-icon" @tap.stop="handleColl({{index}})"></image>
+              <image wx:else src="../images/collection-active-icon.png" class="collection-icon" @tap.stop="handleColl({{index}})"></image>
+            </view>
+            <view class='bottom-box'>
+              <view class="temperature item-img-box">
+                <image src="../images/temperature-icon.png"></image>
+                <view>{{item.temperature}}C</view>
+              </view>
+              <view class="fault item-img-box" wx:if="{{item.fault}}">
+                <image src="../images/fault-icon.png"></image>
+              </view>
+              <view class="arrearage item-img-box" wx:if="{{item.arrearage}}">
+                <image src="../images/arrearage-icon.png"></image>
+              </view>
+              <view class="temperature item-img-box">
+                <picker class="item-picker" @change="changePickerDoor({{index}})" value="{{item.doorModelIndex}}" range="{{item.doorModel}}">
+                  <view class="picker">{{item.doorModel[item.doorModelIndex]}}</view>
+                </picker>
+              </view>
+            </view>
+          </view>
       </view>
     </view>
   </view>
@@ -98,19 +354,158 @@ export default class Home extends wepy.page {
   config = {
     navigationBarTitleText: '香哈菜谱',
     usingComponents: {
-      'i-button': '../iViewDist/button/index'
+      'zy-slider': '../components/zyslider/zyslider'
     }
   }
 
   components = {}
   data = {
     userInfo: '1',
-    houseEstateList: ['小区1', '一共5个字', '一共8个字8个字啊'],
-    storeyList: ['楼栋1', '楼栋2', '楼栋3'],
-    doorNumberList: ['门牌号1', '门牌号2', '门牌号3'],
-    houseEstateIndex: '',
+    houseEstateList: ['晨光家园', '青年路', '一共8个字8个字啊'],
+    storeyList: ['217', '218', '219'],
+    doorNumberList: ['1-101', '1-102', '2-101'],
+    houseEstateIndex: '1',
     storeyIndex: '',
     doorNumberIndex: '',
+    showSeniorSearchPop: false,
+    companyList: ['公司1', '公司名称2', '公司333'],
+    curCompanyIndex: '0', // 当前所选公司索引
+    low: 0,
+    heigh: 100,
+    equipmentList: [
+      {
+        id: '1',
+        house:'泰和小区-100号楼-2-201',
+        collection: false,
+        temperature: 33,
+        fault: false,
+        arrearage: false,
+        doorModel: [
+          '关阀',
+          '10%',
+          '20%',
+          '30%',
+          '40%',
+          '50%',
+          '60%',
+          '70%',
+          '80%',
+          '90%',
+          '100%'
+        ],
+        doorModelIndex: '0'
+      },
+      {
+        id: '2',
+        house:'东方小区-003号楼-1-701',
+        collection: true,
+        temperature: 13,
+        fault: true,
+        arrearage: false,
+        doorModel: [
+          '关阀',
+          '10%',
+          '20%',
+          '30%',
+          '40%',
+          '50%',
+          '60%',
+          '70%',
+          '80%',
+          '90%',
+          '100%'
+        ],
+        doorModelIndex: '0'
+      },
+      {
+        id: '3',
+        house:'胜利家园-5号楼-101',
+        collection: false,
+        temperature: 53,
+        fault: true,
+        arrearage: true,
+        doorModel: [
+          '关阀',
+          '10%',
+          '20%',
+          '30%',
+          '40%',
+          '50%',
+          '60%',
+          '70%',
+          '80%',
+          '90%',
+          '100%'
+        ],
+        doorModelIndex: '9'
+      },
+      {
+        id: '4',
+        house:'晨光家园-111号楼-1-2201',
+        collection: true,
+        temperature: 22,
+        fault: false,
+        arrearage: true,
+        doorModel: [
+          '关阀',
+          '10%',
+          '20%',
+          '30%',
+          '40%',
+          '50%',
+          '60%',
+          '70%',
+          '80%',
+          '90%',
+          '100%'
+        ],
+        doorModelIndex: '6'
+      },
+      {
+        id: '5',
+        house:'温都水城-100号楼-2-201',
+        collection: true,
+        temperature: 77,
+        fault: true,
+        arrearage: true,
+        doorModel: [
+          '关阀',
+          '10%',
+          '20%',
+          '30%',
+          '40%',
+          '50%',
+          '60%',
+          '70%',
+          '80%',
+          '90%',
+          '100%'
+        ],
+        doorModelIndex: '7'
+      },
+      {
+        id: '6',
+        house:'天之南理-3号楼-101',
+        collection: false,
+        temperature: 3,
+        fault: true,
+        arrearage: false,
+        doorModel: [
+          '关阀',
+          '10%',
+          '20%',
+          '30%',
+          '40%',
+          '50%',
+          '60%',
+          '70%',
+          '80%',
+          '90%',
+          '100%'
+        ],
+        doorModelIndex: '3'
+      }
+    ]
   }
 
   onLoad(ops) {
@@ -130,6 +525,38 @@ export default class Home extends wepy.page {
     changePicker(type, e) {
       this[type] = e.detail.value
       this.$apply()
+    },
+    handleSeniorSearch() {
+      this.showSeniorSearchPop = !this.showSeniorSearchPop
+    },
+    lowValueChangeAction: function(e) {
+      this.low = e.detail.lowValue
+      this.$apply()
+    },
+
+    heighValueChangeAction: function(e) {
+      this.heigh = e.detail.heighValue
+      this.$apply()
+    },
+    // 操作收藏
+    handleColl(index) {
+      let that = this
+      that.equipmentList[index].collection = !that.equipmentList[index]
+        .collection
+      that.$apply()
+    },
+    // 操作list的单个阀门
+    changePickerDoor(index, e) {
+      let that = this
+      tip.loading('同步阀门信息')
+      that.equipmentList[index].doorModelIndex = e.detail.value
+      that.$apply()
+      tip.loaded()
+    },
+    navTo(url){
+      console.log(url);
+
+      utils.navigateTo(url);
     }
   }
   events = {}

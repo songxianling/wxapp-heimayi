@@ -1,31 +1,208 @@
 <style lang="less">
-.content-box {
-  .login-box {
-    padding: 300rpx 40rpx;
-    .user-box {
-      width: 100%;
-      padding: 20rpx;
-      text-align: center;
-      box-sizing: border-box;
-      background: linear-gradient(to left, #e98d43, #f2dd14);
-      border-radius: 20rpx;
-      margin-bottom: 60rpx;
+@import '../styles/styleComDef.less';
+.collection-page-box {
+  .header {
+    width: 100%;
+    height: 80rpx;
+    border-bottom: 1rpx solid #d6d6d6;
+    background-color: #f5f5f5;
+    .header_con {
+      width: 700rpx;
+      height: 80rpx;
+      margin: 0 auto;
+      color: #333;
+      font-size: 30rpx;
     }
+  }
 
-    .admin-box {
-      width: 100%;
-      padding: 20rpx;
-      text-align: center;
-      box-sizing: border-box;
-      background: linear-gradient(to left, #6c66fe, #d28ff8);
-      border-radius: 20rpx;
+  .bottom {
+    width: 100%;
+    height: 100rpx;
+    border-top: 1rpx solid #d6d6d6;
+    background-color: #fff;
+    position: fixed;
+    left: 0rpx;
+    bottom: 0rpx;
+    .left {
+      margin-left: 25rpx;
+      .select_none {
+        width: 60rpx;
+        height: 60rpx;
+        border: 1rpx solid #d6d6d6;
+        border-radius: 50%;
+      }
     }
+    .right {
+      .all {
+        color: #ff830f;
+        font-size: 26rpx;
+      }
+      .gray {
+        color: #666666;
+        font-size: 22rpx;
+      }
+      .sure {
+        margin-left: 22rpx;
+        width: 220rpx;
+        height: 100rpx;
+        line-height: 100rpx;
+        text-align: center;
+        background-color: #ff4965;
+        color: #fff;
+      }
+    }
+  }
+
+  /*列表*/
+  .collection-list {
+    width: 100%;
+    margin-top: 15rpx;
+    background-color: #ffffff;
+    font-size: 32rpx;
+    margin-bottom: 100rpx;
+    .item {
+      width: 100%;
+      height: 160rpx;
+      border-bottom: 1rpx solid #d6d6d6;
+      background-color: #ffffff;
+
+      .right-box {
+        width: 90%;
+        padding-right: 6rpx;
+        .name {
+          height: 60rpx;
+          line-height: 60rpx;
+          // border: 1px solid @border;
+          margin-bottom: 10rpx;
+        }
+        .bottom-box {
+          display: flex;
+          display: -webkit-flex;
+          justify-content: flex-end;
+          box-sizing: border-box;
+
+          .item-img-box {
+            display: inline-block;
+            height: 60rpx;
+            line-height: 60rpx;
+            padding: 0 26rpx;
+            border: 1px solid @border;
+            box-sizing: border-box;
+            margin-left: 20rpx;
+            image {
+              display: inline-block;
+              width: 40rpx;
+              height: 40rpx;
+              vertical-align: middle;
+            }
+            view {
+              display: inline-block;
+              height: 50rpx;
+              line-height: 50rpx;
+            }
+          }
+        }
+      }
+      .left-box {
+        width: 10%;
+        margin-left: 10rpx;
+        opacity: 0;
+        &.show {
+          opacity: 1;
+        }
+        .icon_none {
+          width: 50rpx;
+          height: 50rpx;
+          border: 1rpx solid #d6d6d6;
+          border-radius: 50%;
+        }
+      }
+    }
+  }
+
+  .flex_center {
+    display: flex;
+    display: -webkit-flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .flex_between {
+    display: flex;
+    display: -webkit-flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .flex_start {
+    display: flex;
+    display: -webkit-flex;
+    justify-content: flex-start;
+    align-items: center;
+  }
+  .flex_end {
+    display: flex;
+    display: -webkit-flex;
+    justify-content: flex-end;
+    align-items: center;
   }
 }
 </style>
 <template>
-  <view class="collection-box">
-    对不起；您没有权限访问此页面
+  <view class="collection-page-box">
+    <view class='header'>
+      <view class='header_con flex_between'>
+        <view class='flex_center' @tap='management'>
+          <block wx:if="{{!management_good}}">选择</block>
+          <block wx:else>完成</block>
+        </view>
+      </view>
+    </view>
+    <view class='collection-list'>
+      <view class='item flex_center' wx:for="{{equipmentList}}" wx:key="{{index}}" data-id="{{index}}" @tap='select'>
+          <!-- 选择icon -->
+          <view class="left-box {{management_good  ? 'show' : ''}}">
+            <block wx-if="{{!i.checked}}">
+              <view class='icon_none'></view>
+            </block>
+            <block wx-if="{{i.checked}}">
+              <icon type="success" size="25" color="#2db7f5" />
+            </block>
+          </view>
+          <!-- 实际内容 -->
+          <view class='right-box'>
+            <view class='name'>{{item.house}}</view>
+            <view class='bottom-box'>
+              <view class="temperature item-img-box">
+                <image src="../images/temperature-icon.png"></image>
+                <view>{{item.temperature}}C</view>
+              </view>
+              <view class="fault item-img-box" wx:if="{{item.fault}}">
+                <image src="../images/fault-icon.png"></image>
+              </view>
+              <view class="arrearage item-img-box" wx:if="{{item.arrearage}}">
+                <image src="../images/arrearage-icon.png"></image>
+              </view>
+              <view class="temperature item-img-box">
+                <picker class="item-picker" @change="changePickerDoor({{index}})" value="{{item.doorModelIndex}}" range="{{item.doorModel}}">
+                  <view class="picker">{{item.doorModel[item.doorModelIndex]}}</view>
+                </picker>
+              </view>
+            </view>
+          </view>
+      </view>
+    </view>
+    <view class='bottom flex_between' wx:if="{{management_good}}">
+      <view class='left flex_start'>
+        <view @tap='selectAllFn' class='flex_start'>
+          <icon type="success" size="30" color="#2db7f5" wx:if="{{selectAll}}"/>
+          <view class='select_none' wx:if="{{!selectAll}}"></view>
+          <view wx:if="{{!selectAll}}">全选</view>
+          <view wx:if="{{selectAll}}">取消全选</view>
+        </view>
+      </view>
+      <view class='right flex_end'>
+        <view bindtap='deleteitem' class='sure'>删除</view>
+      </view>
+    </view>
   </view>
 </template>
 <script>
@@ -36,12 +213,147 @@ import utils from '../utils/util'
 
 export default class Home extends wepy.page {
   config = {
-    navigationBarTitleText: '香哈菜谱'
+    navigationBarTitleText: '收藏'
   }
   components = {}
   data = {
-    region: ['广东省', '广州市', '海珠区'],
-    customItem: '全部'
+    management_good: true,
+    selectAll: false,
+    middlearr: [],
+    equipmentList: [
+      {
+        id: '1',
+        house:'泰和小区-100号楼-2-201',
+        collection: false,
+        temperature: 33,
+        fault: false,
+        arrearage: false,
+        doorModel: [
+          '关阀',
+          '10%',
+          '20%',
+          '30%',
+          '40%',
+          '50%',
+          '60%',
+          '70%',
+          '80%',
+          '90%',
+          '100%'
+        ],
+        doorModelIndex: '0'
+      },
+      {
+        id: '2',
+        house:'东方小区-003号楼-1-701',
+        collection: true,
+        temperature: 13,
+        fault: true,
+        arrearage: false,
+        doorModel: [
+          '关阀',
+          '10%',
+          '20%',
+          '30%',
+          '40%',
+          '50%',
+          '60%',
+          '70%',
+          '80%',
+          '90%',
+          '100%'
+        ],
+        doorModelIndex: '0'
+      },
+      {
+        id: '3',
+        house:'胜利家园-5号楼-101',
+        collection: false,
+        temperature: 53,
+        fault: true,
+        arrearage: true,
+        doorModel: [
+          '关阀',
+          '10%',
+          '20%',
+          '30%',
+          '40%',
+          '50%',
+          '60%',
+          '70%',
+          '80%',
+          '90%',
+          '100%'
+        ],
+        doorModelIndex: '9'
+      },
+      {
+        id: '4',
+        house:'晨光家园-111号楼-1-2201',
+        collection: true,
+        temperature: 22,
+        fault: false,
+        arrearage: true,
+        doorModel: [
+          '关阀',
+          '10%',
+          '20%',
+          '30%',
+          '40%',
+          '50%',
+          '60%',
+          '70%',
+          '80%',
+          '90%',
+          '100%'
+        ],
+        doorModelIndex: '6'
+      },
+      {
+        id: '5',
+        house:'温都水城-100号楼-2-201',
+        collection: true,
+        temperature: 77,
+        fault: true,
+        arrearage: true,
+        doorModel: [
+          '关阀',
+          '10%',
+          '20%',
+          '30%',
+          '40%',
+          '50%',
+          '60%',
+          '70%',
+          '80%',
+          '90%',
+          '100%'
+        ],
+        doorModelIndex: '7'
+      },
+      {
+        id: '6',
+        house:'天之南理-3号楼-101',
+        collection: false,
+        temperature: 3,
+        fault: true,
+        arrearage: false,
+        doorModel: [
+          '关阀',
+          '10%',
+          '20%',
+          '30%',
+          '40%',
+          '50%',
+          '60%',
+          '70%',
+          '80%',
+          '90%',
+          '100%'
+        ],
+        doorModelIndex: '3'
+      }
+    ]
   }
 
   onLoad(ops) {
@@ -50,10 +362,92 @@ export default class Home extends wepy.page {
 
   computed = {}
   methods = {
+    // 管理商品
+    management: function() {
+      this.management_good = !this.management_good
+      this.$apply()
+    },
+    // 选择
+    select: function(e) {
+      var that = this
+      let arr2 = []
+      if (that.management_good == false) {
+        return
+      } else {
+        var arr = that.equipmentList
+        var index = e.currentTarget.dataset.id
+        arr[index].checked = !arr[index].checked
+        console.log(arr)
+
+        for (let i = 0; i < arr.length; i++) {
+          if (arr[i].checked) {
+            arr2.push(arr[i])
+          }
+        }
+        that.equipmentList = arr
+        that.middlearr = arr2
+      }
+    },
+    // 删除
+    deleteitem: function() {
+      var that = this
+      let arr = that.equipmentList
+      let arr2 = []
+      console.log(arr)
+      for (let i = 0; i < arr.length; i++) {
+        if (arr[i].checked == false) {
+          arr2.push(arr[i])
+        }
+      }
+      that.equipmentList = arr2
+      that.middlearr = []
+    },
+    // 全选
+    selectAllFn: function() {
+      let that = this
+      console.log(1)
+      that.selectAll = !that.selectAll
+      let arr = that.equipmentList
+      let arr2 = []
+      if (that.selectAll) {
+        for (let i = 0; i < arr.length; i++) {
+          if (arr[i].checked == true) {
+            arr2.push(arr[i])
+          } else {
+            arr[i].checked = true
+            arr2.push(arr[i])
+          }
+        }
+        that.equipmentList = arr2
+        that.middlearr = arr2
+      } else {
+        for (let i = 0; i < arr.length; i++) {
+          arr[i].checked = false
+          arr2.push(arr[i])
+        }
+        that.equipmentList = arr2
+        that.middlearr = []
+      }
+      that.$apply()
+    },
     bindRegionChange: e => {
       console.log('picker发送选择改变，携带值为', e.detail.value)
       this.region = e.detail.value
       this.$apply()
+    },
+    handleAnimalChange({ detail = {} }) {
+      console.log(index)
+
+      this.fruit[index].checked = detail.current
+      this.$apply()
+    },
+    // 操作list的单个阀门
+    changePickerDoor(index, e) {
+      let that = this
+      tip.loading('同步阀门信息')
+      that.equipmentList[index].doorModelIndex = e.detail.value
+      that.$apply()
+      tip.loaded()
     }
   }
   events = {}

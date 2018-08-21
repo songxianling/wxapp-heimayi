@@ -50,6 +50,17 @@
       box-sizing: border-box;
     }
   }
+  .login-btn {
+    width: 90%;
+    margin: 100rpx auto 0;
+    height: 96rpx;
+    line-height: 96rpx;
+    text-align: center;
+    border-radius: 6rpx;
+    color: #fff;
+    background: #2db7f5;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+  }
   button {
     margin-top: 100rpx;
   }
@@ -76,7 +87,7 @@
           <input class="r" value="{{ password }}" placeholder="请填写密码" password="true" @change="changeInputValue('password')"/>
           <icon class="close-btn" type="clear" size="20" wx:if="{{password}}" @tap="removeInputValue('password')" />
         </view>
-        <i-button @tap="goLogin(1)" type="info" >登录</i-button>
+        <view class="login-btn" @tap="goLogin(1)">登录</view>
       </view>
       <view class="user-box" wx:else>
         <view class="item-panel clearfix">
@@ -93,7 +104,7 @@
             <icon class="close-btn" type="clear" size="20" wx:if="{{doorId}}" @tap="removeInputValue('doorId')" />
           </view>
         </view>
-        <i-button @tap="goLogin(2)" type="info" >登录</i-button>
+        <view class="login-btn" @tap="goLogin(2)">登录</view>
       </view>
   </view>
 </template>
@@ -105,11 +116,7 @@ import utils from '../utils/util'
 
 export default class Home extends wepy.page {
   config = {
-    navigationBarTitleText: '业主登录',
-    usingComponents: {
-      'i-button': '../iViewDist/button/index',
-      'i-toast': '../iViewDist/toast/index'
-    }
+    navigationBarTitleText: '业主登录'
   }
   components = {}
   data = {
