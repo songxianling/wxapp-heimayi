@@ -375,11 +375,12 @@ export default class Home extends wepy.page {
     equipmentList: [
       {
         id: '1',
-        house:'泰和小区-100号楼-2-201',
+        house: '泰和小区-100号楼-2-201',
         collection: false,
         temperature: 33,
         fault: false,
         arrearage: false,
+        checked: false,
         doorModel: [
           '关阀',
           '10%',
@@ -397,11 +398,12 @@ export default class Home extends wepy.page {
       },
       {
         id: '2',
-        house:'东方小区-003号楼-1-701',
+        house: '东方小区-003号楼-1-701',
         collection: true,
         temperature: 13,
         fault: true,
         arrearage: false,
+        checked: false,
         doorModel: [
           '关阀',
           '10%',
@@ -419,11 +421,12 @@ export default class Home extends wepy.page {
       },
       {
         id: '3',
-        house:'胜利家园-5号楼-101',
+        house: '胜利家园-5号楼-101',
         collection: false,
         temperature: 53,
         fault: true,
         arrearage: true,
+        checked: false,
         doorModel: [
           '关阀',
           '10%',
@@ -441,11 +444,12 @@ export default class Home extends wepy.page {
       },
       {
         id: '4',
-        house:'晨光家园-111号楼-1-2201',
+        house: '晨光家园-111号楼-1-2201',
         collection: true,
         temperature: 22,
         fault: false,
         arrearage: true,
+        checked: false,
         doorModel: [
           '关阀',
           '10%',
@@ -463,11 +467,12 @@ export default class Home extends wepy.page {
       },
       {
         id: '5',
-        house:'温都水城-100号楼-2-201',
+        house: '温都水城-100号楼-2-201',
         collection: true,
         temperature: 77,
         fault: true,
         arrearage: true,
+        checked: false,
         doorModel: [
           '关阀',
           '10%',
@@ -485,11 +490,12 @@ export default class Home extends wepy.page {
       },
       {
         id: '6',
-        house:'天之南理-3号楼-101',
+        house: '天之南理-3号楼-101',
         collection: false,
         temperature: 3,
         fault: true,
         arrearage: false,
+        checked: false,
         doorModel: [
           '关阀',
           '10%',
@@ -553,10 +559,10 @@ export default class Home extends wepy.page {
       that.$apply()
       tip.loaded()
     },
-    navTo(url){
-      console.log(url);
+    navTo(url) {
+      console.log(url)
 
-      utils.navigateTo(url);
+      utils.navigateTo(url)
     }
   }
   events = {}

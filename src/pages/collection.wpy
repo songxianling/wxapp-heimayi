@@ -157,13 +157,13 @@
       </view>
     </view>
     <view class='collection-list'>
-      <view class='item flex_center' wx:for="{{equipmentList}}" wx:key="{{index}}" data-id="{{index}}" @tap='select'>
+      <view class='item flex_center' wx:for="{{equipmentList}}" wx:key="{{index}}" data-id="{{index}}" bindtap='select'>
           <!-- 选择icon -->
           <view class="left-box {{management_good  ? 'show' : ''}}">
-            <block wx-if="{{!i.checked}}">
+            <block wx-if="{{!item.checked}}">
               <view class='icon_none'></view>
             </block>
-            <block wx-if="{{i.checked}}">
+            <block wx-if="{{item.checked}}">
               <icon type="success" size="25" color="#2db7f5" />
             </block>
           </view>
@@ -217,17 +217,18 @@ export default class Home extends wepy.page {
   }
   components = {}
   data = {
-    management_good: true,
+    management_good: false,
     selectAll: false,
     middlearr: [],
     equipmentList: [
       {
         id: '1',
-        house:'泰和小区-100号楼-2-201',
+        house: '泰和小区-100号楼-2-201',
         collection: false,
         temperature: 33,
         fault: false,
         arrearage: false,
+        checked: false,
         doorModel: [
           '关阀',
           '10%',
@@ -245,11 +246,12 @@ export default class Home extends wepy.page {
       },
       {
         id: '2',
-        house:'东方小区-003号楼-1-701',
+        house: '东方小区-003号楼-1-701',
         collection: true,
         temperature: 13,
         fault: true,
         arrearage: false,
+        checked: false,
         doorModel: [
           '关阀',
           '10%',
@@ -267,11 +269,12 @@ export default class Home extends wepy.page {
       },
       {
         id: '3',
-        house:'胜利家园-5号楼-101',
+        house: '胜利家园-5号楼-101',
         collection: false,
         temperature: 53,
         fault: true,
         arrearage: true,
+        checked: false,
         doorModel: [
           '关阀',
           '10%',
@@ -289,11 +292,12 @@ export default class Home extends wepy.page {
       },
       {
         id: '4',
-        house:'晨光家园-111号楼-1-2201',
+        house: '晨光家园-111号楼-1-2201',
         collection: true,
         temperature: 22,
         fault: false,
         arrearage: true,
+        checked: false,
         doorModel: [
           '关阀',
           '10%',
@@ -311,11 +315,12 @@ export default class Home extends wepy.page {
       },
       {
         id: '5',
-        house:'温都水城-100号楼-2-201',
+        house: '温都水城-100号楼-2-201',
         collection: true,
         temperature: 77,
         fault: true,
         arrearage: true,
+        checked: false,
         doorModel: [
           '关阀',
           '10%',
@@ -333,11 +338,12 @@ export default class Home extends wepy.page {
       },
       {
         id: '6',
-        house:'天之南理-3号楼-101',
+        house: '天之南理-3号楼-101',
         collection: false,
         temperature: 3,
         fault: true,
         arrearage: false,
+        checked: false,
         doorModel: [
           '关阀',
           '10%',
@@ -369,6 +375,8 @@ export default class Home extends wepy.page {
     },
     // 选择
     select: function(e) {
+      console.log(1)
+
       var that = this
       let arr2 = []
       if (that.management_good == false) {
@@ -387,6 +395,7 @@ export default class Home extends wepy.page {
         that.equipmentList = arr
         that.middlearr = arr2
       }
+      that.$apply()
     },
     // 删除
     deleteitem: function() {
@@ -405,7 +414,6 @@ export default class Home extends wepy.page {
     // 全选
     selectAllFn: function() {
       let that = this
-      console.log(1)
       that.selectAll = !that.selectAll
       let arr = that.equipmentList
       let arr2 = []
@@ -436,8 +444,6 @@ export default class Home extends wepy.page {
       this.$apply()
     },
     handleAnimalChange({ detail = {} }) {
-      console.log(index)
-
       this.fruit[index].checked = detail.current
       this.$apply()
     },
@@ -454,6 +460,16 @@ export default class Home extends wepy.page {
   //加载更多
   onReachBottom() {
     let that = this
+  }
+  onShareAppMessage (res) {
+    if (res.from === 'button') {
+      // 来自页面内转发按钮
+      console.log(res.target)
+    }
+    return {
+      title: '自定义转发标题',
+      path: ''
+    }
   }
 }
 </script>
