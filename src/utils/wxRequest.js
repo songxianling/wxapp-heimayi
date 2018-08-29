@@ -1,6 +1,6 @@
 import wepy from 'wepy';
 
-const host = 'https://apiwx.ixiangha.com'; // 全局路由
+const host = 'https://api.phpcloud.top'; // 全局路由
 // const host = wx.getStorageSync("xhHost"); // 全局路由
 
 const wxRequest = function (url, params = {}, method = 'post') {

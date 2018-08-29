@@ -72,8 +72,8 @@
       <view class="admin-box" wx:if="{{identity == 1}}">
         <view class="item-panel clearfix">
           <view class="l">选择公司</view>
-          <picker class="r input-box" @change="changePicker('curCompanyIndex')" value="{{curCompanyIndex}}" range="{{companyList}}">
-            <view class="picker">{{companyList[curCompanyIndex]}}</view>
+          <picker class="r input-box" @change="changePicker('curCompanyIndex')" value="{{curCompanyIndex}}" range="{{companyList}}" range-key="{{'company_name'}}">
+            <view class="picker">{{companyList[curCompanyIndex]['company_name']}}</view>
           </picker>
           <icon class="close-btn" type="search" size="20" />
         </view>
@@ -138,6 +138,15 @@ export default class Home extends wepy.page {
 
     wepy.setNavigationBarTitle({
       title: options.id == 1 ? '管理员登录' : '业主登录'
+    })
+    wxRequest('/v1/enter-prise/list', {}).then(res => {
+      console.log(res)
+
+      if (res.code == 200 && res.data) {
+        that.companyList = res.data
+        that.$apply()
+        tip.loaded()
+      }
     })
   }
 

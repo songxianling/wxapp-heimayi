@@ -216,6 +216,7 @@
 </style>
 <template>
   <view class="home-box">
+    <button open-type="getUserInfo" lang="zh_CN" bindgetuserinfo="onGotUserInfo">获取用户信息</button>
     <view class="login-out-box" wx:if="{{!userInfo}}">
       <!-- 身份选择 -->
       <view class="select-identity-box">
@@ -360,7 +361,7 @@ export default class Home extends wepy.page {
 
   components = {}
   data = {
-    userInfo: '1',
+    userInfo: '',
     houseEstateList: ['晨光家园', '青年路', '一共8个字8个字啊'],
     storeyList: ['217', '218', '219'],
     doorNumberList: ['1-101', '1-102', '2-101'],
@@ -516,10 +517,32 @@ export default class Home extends wepy.page {
 
   onLoad(ops) {
     let that = this
+    wxRequest('/v1/enter-prise/list', {}).then(res => {
+      console.log(res);
+
+      if (res.code == 200 && res.data) {
+        that.companyList = res.data
+        that.$apply()
+        tip.loaded()
+      }
+    })
+    // wepy.login().then(res => {
+    //   // console.log("login数据如下");
+    //   // console.log(res);
+    //   let resData = res
+    //   console.log(res);
+
+    //   // 微信官方已不支持非主动唤起登录授权弹窗
+    //   // 可以将下方全部注释把默认进入小程序的登录处理
+    //   wepy.getUserInfo().then(res => {})
+    // })
   }
 
   computed = {}
   methods = {
+    onGotUserInfo(e) {
+      console.log(e.detail.userInfo)
+    },
     goFillInInfo(type) {
       // 选择身份进行登录
       let that = this
