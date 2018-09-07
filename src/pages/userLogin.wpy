@@ -72,13 +72,13 @@
       <view class="admin-box" wx:if="{{identity == 1}}">
         <view class="item-panel clearfix">
           <view class="l">选择公司</view>
-          <picker class="r input-box" @change="changePicker('curCompanyIndex')" value="{{curCompanyIndex}}" range="{{companyList}}" range-key="{{'company_name'}}">
+          <picker class="r input-box" @change="changePicker('company')" value="{{curCompanyIndex}}" range="{{companyList}}" range-key="{{'company_name'}}">
             <view class="picker">{{companyList[curCompanyIndex]['company_name']}}</view>
           </picker>
           <icon class="close-btn" type="search" size="20" />
         </view>
         <view class="item-panel clearfix">
-          <view class="l">阀门ID</view>
+          <view class="l">用户名</view>
           <input class="r" value="{{ username }}" placeholder="请填写用户名" @change="changeInputValue('username')"/>
           <icon class="close-btn" type="clear" size="20" wx:if="{{username}}" @tap="removeInputValue('username')" />
         </view>
@@ -91,7 +91,7 @@
       </view>
       <view class="user-box" wx:else>
         <view class="item-panel clearfix">
-          <view class="l">供应商</view>
+          <view class="l">供热商</view>
           <picker class="r input-box" @change="changePicker('curSupplierIndex')" value="{{curSupplierIndex}}" range="{{supplierList}}">
             <view class="picker">{{supplierList[curSupplierIndex]}}</view>
           </picker>
@@ -129,7 +129,9 @@ export default class Home extends wepy.page {
     companyList: ['公司1', '公司名称2', '公司333'],
     supplierList: ['供应商1', '供应商2', '供应商3'],
     curCompanyIndex: '0', // 当前所选公司索引
-    curSupplierIndex: '0' // 当前所选供应商索引
+    curSupplierIndex: '0', // 当前所选供应商索引
+    companyName: '', // 公司名
+    companyId: '' // 公司id
   }
 
   onLoad(options) {
@@ -157,17 +159,30 @@ export default class Home extends wepy.page {
       let that = this
       var params = {}
       if (type == 1) {
+        // 管理员登录
         if (that.username && that.password) {
           params = {
             curCompanyIndex: that.curCompanyIndex,
             username: that.username,
             password: that.password
           }
+          wxRequest('/v1/company/login', params).then(res => {
+            console.log(res)
+
+            if (res.code == 200 && res.data) {
+              that.companyList = res.data
+              that.companyName = that.companyList[0].company_name
+              that.companyId = that.companyList[0].company_id
+              that.$apply()
+              tip.loaded()
+            }
+          })
         } else {
           tip.alert('信息不完整')
           return
         }
       } else {
+        // 用户登录
         if (that.doorId) {
           params = {
             curSupplierIndex: that.curSupplierIndex,
@@ -187,9 +202,19 @@ export default class Home extends wepy.page {
       this[type] = ''
     },
     changePicker(type, e) {
+      // console.log(id)
+      let that = this
+      that.curCompanyIndex = e.detail.value
       console.log('picker发送选择改变，携带值为', e.detail.value)
-      this[type] = e.detail.value
-      this.$apply()
+      // that[type] = e.detail.value
+      if (type == 'company') {
+        that.companyName = that.companyList[e.detail.value].company_name
+        that.companyId = that.companyList[e.detail.value].company_id
+      }
+
+      // that.companyList
+
+      that.$apply()
     }
   }
   events = {}
