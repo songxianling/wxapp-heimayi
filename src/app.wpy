@@ -77,7 +77,7 @@ export default class extends wepy.app {
 
         // 微信官方已不支持非主动唤起登录授权弹窗
         // 可以将下方全部注释把默认进入小程序的登录处理
-        wepy.getUserInfo().then(res => {})
+        // wepy.getUserInfo().then(res => {})
       })
     } else {
       this.userInfo = userInfo

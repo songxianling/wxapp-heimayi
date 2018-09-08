@@ -216,8 +216,7 @@
 </style>
 <template>
   <view class="home-box">
-    <button open-type="getUserInfo" lang="zh_CN" bindgetuserinfo="onGotUserInfo">获取用户信息</button>
-    <view class="login-out-box" wx:if="{{!userInfo}}">
+    <view class="login-out-box" wx:if="{{!token}}">
       <!-- 身份选择 -->
       <view class="select-identity-box">
         <view class="admin-btn btn" @tap="goFillInInfo(1)">我是管理员</view>
@@ -225,27 +224,27 @@
       </view>
     </view>
     <!-- 搜索选项 -->
-    <view class="search-select-box" wx:if="{{userInfo}}">
+    <view class="search-select-box" wx:if="{{token}}">
       <view class="item-line">
-        <input class="s-input" value="{{ doorId }}" placeholder="请填写阀门ID" @change="changeInputValue('doorId')"/>
+        <input class="s-input" value="{{valve_id}}" placeholder="请填写阀门ID" @input="inputValueing('valve_id')"/>
         <view class="item">
           <icon class="s-icon" type="info" size="22" color="rgb(0,255,255)"/>
         </view>
-        <view class="item search-btn">
+        <view class="item search-btn" @tap="goSearch">
           <icon class="s-icon" type="search" size="22" color="#2db7f5"/>
         </view>
       </view>
       <view class="item-line">
-        <picker class="item-picker" @change="changePicker('houseEstateIndex')" value="{{houseEstateIndex}}" range="{{houseEstateList}}">
-          <view class="picker" wx:if="{{houseEstateIndex}}">{{houseEstateList[houseEstateIndex]}}</view>
+        <picker class="item-picker" @change="changePicker('village_name','villageList')" range="{{villageList}}" range-key="{{'village_name'}}">
+          <view class="picker" wx:if="{{village_name}}">{{village_name}}</view>
           <view class="picker" wx:else>小区</view>
         </picker>
-        <picker class="item-picker" @change="changePicker('storeyIndex')" value="{{storeyIndex}}" range="{{storeyList}}">
-          <view class="picker" wx:if="{{storeyIndex}}">{{storeyList[storeyIndex]}}</view>
+        <picker class="item-picker" @change="changePicker('building_name','buildingList')" range="{{buildingList}}" range-key="{{'building_name'}}">
+          <view class="picker" wx:if="{{building_name}}">{{building_name}}</view>
           <view class="picker" wx:else>楼栋</view>
         </picker>
-        <picker class="item-picker" @change="changePicker('doorNumberIndex')" value="{{doorNumberIndex}}" range="{{doorNumberList}}">
-          <view class="picker" wx:if="{{doorNumberIndex}}">{{doorNumberList[doorNumberIndex]}}</view>
+        <picker class="item-picker" @change="changePicker('room_name','roomList')" range="{{roomList}}" range-key="{{'room_name'}}">
+          <view class="picker" wx:if="{{room_name}}">{{room_name}}</view>
           <view class="picker" wx:else>门牌号</view>
         </picker>
         <view class="item-picker" @tap="handleSeniorSearch">高级检索</view>
@@ -318,27 +317,27 @@
       <view class='item flex_center' wx:for="{{equipmentList}}" wx:key="{{item.index}}">
           <!-- 实际内容 -->
           <view class='right-box'>
-            <view class='name' @tap="navTo('/pages/detail?id={{item.id}}')">
-              泰和小区--1号楼-1-101
+            <view class='name' @tap="navTo('/pages/detail?id={{item.meter_id}}')">
+              {{item.village_name}}-{{item.building_name}}-{{item.room_name}}
               <image wx:if="{{item.collection}}" src="../images/collection-icon.png" class="collection-icon" @tap.stop="handleColl({{index}})"></image>
               <image wx:else src="../images/collection-active-icon.png" class="collection-icon" @tap.stop="handleColl({{index}})"></image>
             </view>
             <view class='bottom-box'>
               <view class="temperature item-img-box">
                 <image src="../images/temperature-icon.png"></image>
-                <view>{{item.temperature}}C</view>
+                <view>3C</view>
               </view>
-              <view class="fault item-img-box" wx:if="{{item.fault}}">
+              <view class="fault item-img-box" wx:if="{{item.fault_message}}">
                 <image src="../images/fault-icon.png"></image>
               </view>
-              <view class="arrearage item-img-box" wx:if="{{item.arrearage}}">
+              <view class="arrearage item-img-box" wx:if="{{item.payment_state == '未缴费'}}">
                 <image src="../images/arrearage-icon.png"></image>
               </view>
-              <view class="temperature item-img-box">
+              <!-- <view class="temperature item-img-box">
                 <picker class="item-picker" @change="changePickerDoor({{index}})" value="{{item.doorModelIndex}}" range="{{item.doorModel}}">
                   <view class="picker">{{item.doorModel[item.doorModelIndex]}}</view>
                 </picker>
-              </view>
+              </view> -->
             </view>
           </view>
       </view>
@@ -361,8 +360,14 @@ export default class Home extends wepy.page {
 
   components = {}
   data = {
-    userInfo: '',
-    houseEstateList: ['晨光家园', '青年路', '一共8个字8个字啊'],
+    token: '',
+    valve_id:'',  // 阀门id
+    villageList: '', // 小区列表
+    village_name: '', // 小区名字
+    buildingList: '', // 楼栋列表
+    building_name: '', // 楼栋名字
+    roomList: '', // 门牌号列表
+    room_name: '', // 门牌号名字
     storeyList: ['217', '218', '219'],
     doorNumberList: ['1-101', '1-102', '2-101'],
     houseEstateIndex: '1',
@@ -373,188 +378,194 @@ export default class Home extends wepy.page {
     curCompanyIndex: '0', // 当前所选公司索引
     low: 0,
     heigh: 100,
+    a: {
+      id: '1',
+      house: '泰和小区-100号楼-2-201',
+      collection: false,
+      temperature: 33,
+      fault: false,
+      arrearage: false,
+      checked: false,
+      doorModel: [
+        '关阀',
+        '10%',
+        '20%',
+        '30%',
+        '40%',
+        '50%',
+        '60%',
+        '70%',
+        '80%',
+        '90%',
+        '100%'
+      ],
+      doorModelIndex: '0'
+    },
     equipmentList: [
       {
-        id: '1',
-        house: '泰和小区-100号楼-2-201',
-        collection: false,
-        temperature: 33,
-        fault: false,
-        arrearage: false,
-        checked: false,
-        doorModel: [
-          '关阀',
-          '10%',
-          '20%',
-          '30%',
-          '40%',
-          '50%',
-          '60%',
-          '70%',
-          '80%',
-          '90%',
-          '100%'
-        ],
-        doorModelIndex: '0'
+        meter_id: '11114001004301 ',
+        model_id: '220',
+        village_name: '晋东三号院',
+        building_name: '16号楼',
+        room_name: '【16-03-25】3单元1F东户',
+        valve_opening: '0.00',
+        temp_return: '0.00',
+        battery_level: '0.00',
+        payment_state: '未缴费',
+        fault_message: '',
+        time_sample: '0000-00-00 00:00:00'
       },
       {
-        id: '2',
-        house: '东方小区-003号楼-1-701',
-        collection: true,
-        temperature: 13,
-        fault: true,
-        arrearage: false,
-        checked: false,
-        doorModel: [
-          '关阀',
-          '10%',
-          '20%',
-          '30%',
-          '40%',
-          '50%',
-          '60%',
-          '70%',
-          '80%',
-          '90%',
-          '100%'
-        ],
-        doorModelIndex: '0'
-      },
-      {
-        id: '3',
-        house: '胜利家园-5号楼-101',
-        collection: false,
-        temperature: 53,
-        fault: true,
-        arrearage: true,
-        checked: false,
-        doorModel: [
-          '关阀',
-          '10%',
-          '20%',
-          '30%',
-          '40%',
-          '50%',
-          '60%',
-          '70%',
-          '80%',
-          '90%',
-          '100%'
-        ],
-        doorModelIndex: '9'
-      },
-      {
-        id: '4',
-        house: '晨光家园-111号楼-1-2201',
-        collection: true,
-        temperature: 22,
-        fault: false,
-        arrearage: true,
-        checked: false,
-        doorModel: [
-          '关阀',
-          '10%',
-          '20%',
-          '30%',
-          '40%',
-          '50%',
-          '60%',
-          '70%',
-          '80%',
-          '90%',
-          '100%'
-        ],
-        doorModelIndex: '6'
-      },
-      {
-        id: '5',
-        house: '温都水城-100号楼-2-201',
-        collection: true,
-        temperature: 77,
-        fault: true,
-        arrearage: true,
-        checked: false,
-        doorModel: [
-          '关阀',
-          '10%',
-          '20%',
-          '30%',
-          '40%',
-          '50%',
-          '60%',
-          '70%',
-          '80%',
-          '90%',
-          '100%'
-        ],
-        doorModelIndex: '7'
-      },
-      {
-        id: '6',
-        house: '天之南理-3号楼-101',
-        collection: false,
-        temperature: 3,
-        fault: true,
-        arrearage: false,
-        checked: false,
-        doorModel: [
-          '关阀',
-          '10%',
-          '20%',
-          '30%',
-          '40%',
-          '50%',
-          '60%',
-          '70%',
-          '80%',
-          '90%',
-          '100%'
-        ],
-        doorModelIndex: '3'
+        meter_id: '11114001004301 ',
+        model_id: '220',
+        village_name: '晋东三号院',
+        building_name: '16号楼',
+        room_name: '【16-03-25】3单元1F东户',
+        valve_opening: '0.00',
+        temp_return: '0.00',
+        battery_level: '0.00',
+        payment_state: '未缴费',
+        fault_message: '',
+        time_sample: '0000-00-00 00:00:00'
       }
     ]
   }
 
   onLoad(ops) {
     let that = this
+    let token = wepy.getStorageSync('token')
+    that.token = token || ''
     wxRequest('/v1/enter-prise/list', {}).then(res => {
-      console.log(res);
-
+      console.log(res)
       if (res.code == 200 && res.data) {
         that.companyList = res.data
         that.$apply()
         tip.loaded()
       }
     })
-    // wepy.login().then(res => {
-    //   // console.log("login数据如下");
-    //   // console.log(res);
-    //   let resData = res
-    //   console.log(res);
-
-    //   // 微信官方已不支持非主动唤起登录授权弹窗
-    //   // 可以将下方全部注释把默认进入小程序的登录处理
-    //   wepy.getUserInfo().then(res => {})
-    // })
+    that.getVillage()
   }
+  async getVillage() {
+    let that = this
+    wxRequest('/v1/user/village-list', {}).then(res => {
+      console.log(res)
+      if (res.code == 200 && res.data) {
+        that.villageList = res.data
+        that.$apply()
+        // that.getBuilding()
+        tip.loaded()
+      }
+    })
+  }
+  // 获取楼栋列表
+  async getBuildingList() {
+    let that = this
+    console.log(333)
+    setTimeout(() => {
+      console.log(that.village_name)
+    }, 2000)
+    let params = {
+      village_name: that.village_name
+    }
+    wxRequest('/v1/user/building-list', params).then(res => {
+      console.log(res)
+      if (res.code == 200 && res.data) {
+        that.buildingList = res.data
+        that.$apply()
+        tip.loaded()
+      }
+    })
+  }
+  // 获取门牌号列表
+  async getRoomList() {
+    let that = this
+    let params = {
+      village_name: that.village_name,
+      building_name: that.building_name
+    }
+    wxRequest('/v1/user/room-list', params).then(res => {
+      console.log(res)
+      if (res.code == 200 && res.data) {
+        that.roomList = res.data
+        that.$apply()
+        tip.loaded()
+      }
+    })
+  }
+  async getBuilding() {
+    let that = this
+    console.log(that.villageName)
 
+    let params = {
+      village_name: that.villageName
+    }
+    wxRequest('/v1/user/building-list', params).then(res => {
+      console.log(res)
+      if (res.code == 200 && res.data) {
+        that.buildingList = res.data
+        that.$apply()
+        tip.loaded()
+      }
+    })
+  }
   computed = {}
   methods = {
-    onGotUserInfo(e) {
-      console.log(e.detail.userInfo)
+    goSearch() {
+      tip.loading()
+      let that = this
+      let params = {}
+      if (that.valve_id) {
+        params.valve_id = that.valve_id
+        wxRequest('/v1/user/search-id', params).then(res => {
+          console.log(res)
+          if (res.code == 200 && res.data) {
+            that.equipmentList = res.data[1]
+            that.$apply()
+            tip.loaded()
+          }
+        })
+      } else {
+        params = {
+          village_name: that.village_name,
+          building_name: that.building_name,
+          room_name: that.room_name
+        }
+        wxRequest('/v1/user/search-detail', params).then(res => {
+          console.log(res)
+          if (res.code == 200 && res.data) {
+            that.equipmentList = res.data[1]
+            that.$apply()
+            tip.loaded()
+          }
+        })
+      }
     },
     goFillInInfo(type) {
       // 选择身份进行登录
       let that = this
       utils.navigateTo(`/pages/userLogin?id=${type}`)
     },
-    changeInputValue(type, e) {
+    inputValueing(type, e) {
+      console.log(111);
+
       this[type] = e.detail.value
     },
-    changePicker(type, e) {
-      this[type] = e.detail.value
+    changePicker(type, list, e) {
+      let that = this
+      if (that[list].length) {
+        that[type] = that[list][e.detail.value][type] || ''
+      }
+
+      console.log('点了确定')
+      if (type == 'village_name') {
+        that.getBuildingList()
+      }
+      if (type == 'building_name') {
+        that.getRoomList()
+      }
       this.$apply()
     },
+
     handleSeniorSearch() {
       this.showSeniorSearchPop = !this.showSeniorSearchPop
     },
