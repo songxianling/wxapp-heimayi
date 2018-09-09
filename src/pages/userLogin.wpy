@@ -163,17 +163,20 @@ export default class Home extends wepy.page {
         // 管理员登录
         if (that.username && that.password) {
           params = {
-            company_id:that.companyId,
-            company_name:that.companyName,
+            company_id: that.companyId,
+            company_name: that.companyName,
             username: that.username,
             password: that.password
           }
           wxRequest('/v1/company/login', params).then(res => {
             console.log(res)
             if (res.code == 200 && res.data) {
-              wepy.setStorageSync('token',res.data.token)
+              wepy.setStorageSync('userInfo', res.data)
               that.$apply()
               tip.loaded()
+              wepy.switchTab({
+                url: '/pages/home'
+              })
             }
           })
         } else {
@@ -184,16 +187,19 @@ export default class Home extends wepy.page {
         // 用户登录
         if (that.valveId) {
           params = {
-            company_id:that.companyId,
-            company_name:that.companyName,
-            valveId: that.valveId
+            company_id: that.companyId,
+            company_name: that.companyName,
+            valve_id: that.valveId
           }
-          wxRequest('/v1/company/login', params).then(res => {
+          wxRequest('/v1/company/user-login', params).then(res => {
             console.log(res)
             if (res.code == 200 && res.data) {
-              wepy.setStorageSync('token',res.data.token)
+              wepy.setStorageSync('userInfo', res.data)
               that.$apply()
               tip.loaded()
+              wepy.navigateBack({
+                delta: 1
+              })
             }
           })
         } else {

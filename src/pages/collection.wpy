@@ -147,7 +147,7 @@
 }
 </style>
 <template>
-  <view class="collection-page-box">
+  <view class="collection-page-box" wx:if="{{userInfo.is_super == 1}}">
     <view class='header'>
       <view class='header_con flex_between'>
         <view class='flex_center' @tap='management'>
@@ -157,7 +157,7 @@
       </view>
     </view>
     <view class='collection-list'>
-      <view class='item flex_center' wx:for="{{equipmentList}}" wx:key="{{index}}" data-id="{{index}}" bindtap='select'>
+      <view class='item flex_center' wx:for="{{equipmentList}}" wx:key="{{index}}" data-id="{{index}}" @tap='select({{item.meter_id}})'>
           <!-- 选择icon -->
           <view class="left-box {{management_good  ? 'show' : ''}}">
             <block wx-if="{{!item.checked}}">
@@ -169,21 +169,21 @@
           </view>
           <!-- 实际内容 -->
           <view class='right-box'>
-            <view class='name'>{{item.house}}</view>
+            <view class='name'>{{item.village_name}}-{{item.building_name}}-{{item.room_name}}</view>
             <view class='bottom-box'>
               <view class="temperature item-img-box">
                 <image src="../images/temperature-icon.png"></image>
-                <view>{{item.temperature}}C</view>
+                <view>{{item.temp_return}}C</view>
               </view>
-              <view class="fault item-img-box" wx:if="{{item.fault}}">
+              <view class="fault item-img-box" wx:if="{{item.fault_message}}">
                 <image src="../images/fault-icon.png"></image>
               </view>
-              <view class="arrearage item-img-box" wx:if="{{item.arrearage}}">
+              <view class="arrearage item-img-box" wx:if="{{item.payment_state == '未缴费'}}">
                 <image src="../images/arrearage-icon.png"></image>
               </view>
               <view class="temperature item-img-box">
-                <picker class="item-picker" @change="changePickerDoor({{index}})" value="{{item.doorModelIndex}}" range="{{item.doorModel}}">
-                  <view class="picker">{{item.doorModel[item.doorModelIndex]}}</view>
+                <picker class="item-picker" @change="changePickerDoor({{item.meter_id}},{{index}})" value="{{doorModelIndex}}" range="{{doorModel}}" range-key="{{'name'}}">
+                  <view class="picker">{{item.valve_opening}}</view>
                 </picker>
               </view>
             </view>
@@ -200,10 +200,13 @@
         </view>
       </view>
       <view class='right flex_end'>
-        <view bindtap='deleteitem' class='sure'>删除</view>
+        <view bindtap='deleteFn' class='sure'>删除</view>
       </view>
     </view>
   </view>
+  <view wx:else>
+      您当前没有权限查看该列表
+    </view>
 </template>
 <script>
 import wepy from 'wepy'
@@ -211,159 +214,99 @@ import { wxRequest } from '../utils/wxRequest'
 import tip from '../utils/tip'
 import utils from '../utils/util'
 
-export default class Home extends wepy.page {
+export default class Collection extends wepy.page {
   config = {
     navigationBarTitleText: '收藏'
   }
   components = {}
   data = {
+    userInfo: '',
+    page: 1,
+    isOk: true, // 重复请求
+    isFisrt: true, // 是否第一次
     management_good: false,
     selectAll: false,
-    middlearr: [],
-    equipmentList: [
+    delectArr: [],
+    doorModel: [
       {
-        id: '1',
-        house: '泰和小区-100号楼-2-201',
-        collection: false,
-        temperature: 33,
-        fault: false,
-        arrearage: false,
-        checked: false,
-        doorModel: [
-          '关阀',
-          '10%',
-          '20%',
-          '30%',
-          '40%',
-          '50%',
-          '60%',
-          '70%',
-          '80%',
-          '90%',
-          '100%'
-        ],
-        doorModelIndex: '0'
+        name: '关阀',
+        value: 0
       },
       {
-        id: '2',
-        house: '东方小区-003号楼-1-701',
-        collection: true,
-        temperature: 13,
-        fault: true,
-        arrearage: false,
-        checked: false,
-        doorModel: [
-          '关阀',
-          '10%',
-          '20%',
-          '30%',
-          '40%',
-          '50%',
-          '60%',
-          '70%',
-          '80%',
-          '90%',
-          '100%'
-        ],
-        doorModelIndex: '0'
+        name: '10%',
+        value: 10
       },
       {
-        id: '3',
-        house: '胜利家园-5号楼-101',
-        collection: false,
-        temperature: 53,
-        fault: true,
-        arrearage: true,
-        checked: false,
-        doorModel: [
-          '关阀',
-          '10%',
-          '20%',
-          '30%',
-          '40%',
-          '50%',
-          '60%',
-          '70%',
-          '80%',
-          '90%',
-          '100%'
-        ],
-        doorModelIndex: '9'
+        name: '20%',
+        value: 20
       },
       {
-        id: '4',
-        house: '晨光家园-111号楼-1-2201',
-        collection: true,
-        temperature: 22,
-        fault: false,
-        arrearage: true,
-        checked: false,
-        doorModel: [
-          '关阀',
-          '10%',
-          '20%',
-          '30%',
-          '40%',
-          '50%',
-          '60%',
-          '70%',
-          '80%',
-          '90%',
-          '100%'
-        ],
-        doorModelIndex: '6'
+        name: '30%',
+        value: 30
       },
       {
-        id: '5',
-        house: '温都水城-100号楼-2-201',
-        collection: true,
-        temperature: 77,
-        fault: true,
-        arrearage: true,
-        checked: false,
-        doorModel: [
-          '关阀',
-          '10%',
-          '20%',
-          '30%',
-          '40%',
-          '50%',
-          '60%',
-          '70%',
-          '80%',
-          '90%',
-          '100%'
-        ],
-        doorModelIndex: '7'
+        name: '40%',
+        value: 40
       },
       {
-        id: '6',
-        house: '天之南理-3号楼-101',
-        collection: false,
-        temperature: 3,
-        fault: true,
-        arrearage: false,
-        checked: false,
-        doorModel: [
-          '关阀',
-          '10%',
-          '20%',
-          '30%',
-          '40%',
-          '50%',
-          '60%',
-          '70%',
-          '80%',
-          '90%',
-          '100%'
-        ],
-        doorModelIndex: '3'
+        name: '50%',
+        value: 50
+      },
+      {
+        name: '60%',
+        value: 60
+      },
+      {
+        name: '70%',
+        value: 70
+      },
+      {
+        name: '80%',
+        value: 80
+      },
+      {
+        name: '90%',
+        value: 90
+      },
+      {
+        name: '100%',
+        value: 100
       }
-    ]
+    ],
+    doorModelIndex: '0',
+    equipmentList: []
   }
 
   onLoad(ops) {
     let that = this
+    that.userInfo = wepy.getStorageSync('userInfo')
+    that.getList()
+  }
+  onShow() {
+    let that = this
+    that.userInfo = wepy.getStorageSync('userInfo')
+    that.getList()
+  }
+
+  // 获取历史列表
+  async getList() {
+    let that = this
+    if (!that.isFisrt) {
+      that.page++
+    }
+    let params = {
+      page: that.page,
+      pageSize: 10
+    }
+    wxRequest('/v1/user/favorite-list', params).then(res => {
+      console.log(res)
+      if (res.code == 200 && res.data) {
+        that.isFisrt = false
+        that.equipmentList = [...that.equipmentList, ...res.data.list]
+        that.$apply()
+        tip.loaded()
+      }
+    })
   }
 
   computed = {}
@@ -374,9 +317,7 @@ export default class Home extends wepy.page {
       this.$apply()
     },
     // 选择
-    select: function(e) {
-      console.log(1)
-
+    select: function(id, e) {
       var that = this
       let arr2 = []
       if (that.management_good == false) {
@@ -386,30 +327,42 @@ export default class Home extends wepy.page {
         var index = e.currentTarget.dataset.id
         arr[index].checked = !arr[index].checked
         console.log(arr)
-
         for (let i = 0; i < arr.length; i++) {
           if (arr[i].checked) {
-            arr2.push(arr[i])
+            arr2.push(arr[i].meter_id)
           }
         }
+        console.log(arr2)
+
         that.equipmentList = arr
-        that.middlearr = arr2
+        that.delectArr = arr2
       }
       that.$apply()
     },
     // 删除
-    deleteitem: function() {
-      var that = this
-      let arr = that.equipmentList
-      let arr2 = []
-      console.log(arr)
-      for (let i = 0; i < arr.length; i++) {
-        if (arr[i].checked == false) {
-          arr2.push(arr[i])
-        }
+    deleteFn: function() {
+      let that = this
+      let params = {
+        valve_ids: that.delectArr
       }
-      that.equipmentList = arr2
-      that.middlearr = []
+      wxRequest('/v1/user/del-favorite', params).then(res => {
+        console.log(res)
+        if (res.code == 200) {
+          let arr = that.equipmentList
+          let arr2 = []
+          console.log(arr)
+          for (let i = 0; i < arr.length; i++) {
+            if (arr[i].checked == false) {
+              arr2.push(arr[i])
+            }
+          }
+          that.equipmentList = arr2
+          that.delectArr = []
+
+          that.$apply()
+          tip.loaded()
+        }
+      })
     },
     // 全选
     selectAllFn: function() {
@@ -427,32 +380,35 @@ export default class Home extends wepy.page {
           }
         }
         that.equipmentList = arr2
-        that.middlearr = arr2
+        that.delectArr = arr2
       } else {
         for (let i = 0; i < arr.length; i++) {
           arr[i].checked = false
           arr2.push(arr[i])
         }
         that.equipmentList = arr2
-        that.middlearr = []
+        that.delectArr = []
       }
       that.$apply()
     },
-    bindRegionChange: e => {
-      console.log('picker发送选择改变，携带值为', e.detail.value)
-      this.region = e.detail.value
-      this.$apply()
-    },
-    handleAnimalChange({ detail = {} }) {
-      this.fruit[index].checked = detail.current
-      this.$apply()
-    },
     // 操作list的单个阀门
-    changePickerDoor(index, e) {
+    changePickerDoor(id, index, e) {
       let that = this
       tip.loading('同步阀门信息')
-      that.equipmentList[index].doorModelIndex = e.detail.value
-      that.$apply()
+      console.log(index)
+      console.log(e)
+      let params = {
+        valve_id: id,
+        valve_status: that.doorModel[e.detail.value].value
+      }
+      wxRequest('/v1/user/close-valve', params).then(res => {
+        console.log(res)
+        if (res.code == 200) {
+          that.equipmentList[index].valve_opening =
+            that.doorModel[e.detail.value].name
+          that.$apply()
+        }
+      })
       tip.loaded()
     }
   }
@@ -460,8 +416,10 @@ export default class Home extends wepy.page {
   //加载更多
   onReachBottom() {
     let that = this
+    that.getList()
+    that.$apply()
   }
-  onShareAppMessage (res) {
+  onShareAppMessage(res) {
     if (res.from === 'button') {
       // 来自页面内转发按钮
       console.log(res.target)

@@ -4,7 +4,7 @@ const host = 'https://api.phpcloud.top'; // 全局路由
 // const host = wx.getStorageSync("xhHost"); // 全局路由
 
 const wxRequest = function (url, params = {}, method = 'post') {
-  let token = wepy.getStorageSync("token");
+  let token = wepy.getStorageSync("userInfo").token;
   return new Promise((resolve, reject) => {
     let requestUrl = host + url;
     params.token = token || '';

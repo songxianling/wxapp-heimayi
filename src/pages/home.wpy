@@ -212,11 +212,64 @@
       }
     }
   }
+  .detail-box {
+    width: 90%;
+    margin: 100rpx auto 0;
+    .item-msg {
+      border: 1px solid @border;
+      margin-bottom: 20rpx;
+      .name {
+        display: inline-block;
+        width: 30%;
+        height: 70rpx;
+        line-height: 70rpx;
+        padding-left: 10rpx;
+        box-sizing: border-box;
+        background: #6aa7e9;
+        color: #333;
+      }
+      .con {
+        position: relative;
+        display: inline-block;
+        width: 70%;
+        height: 70rpx;
+        line-height: 70rpx;
+        padding-left: 10rpx;
+        box-sizing: border-box;
+        background: #fff;
+        color: #333;
+        .explain {
+          position: absolute;
+          top: 0;
+          right: 70rpx;
+          height: 60rpx;
+          padding: 6rpx;
+          border-left: 1px solid @border;
+        }
+        image {
+          position: absolute;
+          top: 0;
+          right: 0;
+          width: 60rpx;
+          height: 60rpx;
+          padding: 6rpx;
+          border-left: 1px solid @border;
+        }
+      }
+    }
+    .handle-bar {
+      view {
+        display: inline-block;
+        width: 49%;
+        text-align: center;
+      }
+    }
+  }
 }
 </style>
 <template>
   <view class="home-box">
-    <view class="login-out-box" wx:if="{{!token}}">
+    <view class="login-out-box" wx:if="{{!userInfo}}">
       <!-- 身份选择 -->
       <view class="select-identity-box">
         <view class="admin-btn btn" @tap="goFillInInfo(1)">我是管理员</view>
@@ -224,9 +277,10 @@
       </view>
     </view>
     <!-- 搜索选项 -->
-    <view class="search-select-box" wx:if="{{token}}">
+    <view class="search-select-box" wx:if="{{userInfo.is_super == 1}}">
       <view class="item-line">
-        <input class="s-input" value="{{valve_id}}" placeholder="请填写阀门ID" @input="inputValueing('valve_id')"/>
+        <input class="s-input" value="{{valve_id}}" placeholder="请填写阀门ID" @input="inputValueing('valve_id')" bindconfirm="search"
+            confirm-type="搜索"/>
         <view class="item">
           <icon class="s-icon" type="info" size="22" color="rgb(0,255,255)"/>
         </view>
@@ -260,52 +314,58 @@
       <view class="senior-con-box">
         <view class="item-panel clearfix">
           <view class="l">小区</view>
-          <picker class="r input-box" @change="changePicker('curCompanyIndex')" value="{{curCompanyIndex}}" range="{{companyList}}">
-            <view class="picker">{{companyList[curCompanyIndex]}}</view>
+          <picker class="r input-box" @change="changePicker('village_name','villageList')" range="{{villageList}}" range-key="{{'village_name'}}">
+            <view class="picker" wx:if="{{village_name}}">{{village_name}}</view>
+            <view class="picker" wx:else>小区</view>
             <image class="arrow-icon" src="../images/arrow-bottom-icon.png"></image>
           </picker>
         </view>
         <view class="item-panel clearfix">
           <view class="l">楼栋</view>
-          <picker class="r input-box" @change="changePicker('curCompanyIndex')" value="{{curCompanyIndex}}" range="{{companyList}}">
-            <view class="picker">{{companyList[curCompanyIndex]}}</view>
-          <image class="arrow-icon" src="../images/arrow-bottom-icon.png"></image>
+          <picker class="r input-box" @change="changePicker('building_name','buildingList')" range="{{buildingList}}" range-key="{{'building_name'}}">
+            <view class="picker" wx:if="{{building_name}}">{{building_name}}</view>
+            <view class="picker" wx:else>楼栋</view>
+            <image class="arrow-icon" src="../images/arrow-bottom-icon.png"></image>
           </picker>
         </view>
         <view class="item-panel clearfix">
           <view class="l">门牌号</view>
-          <picker class="r input-box" @change="changePicker('curCompanyIndex')" value="{{curCompanyIndex}}" range="{{companyList}}">
-            <view class="picker">{{companyList[curCompanyIndex]}}</view>
-          <image class="arrow-icon" src="../images/arrow-bottom-icon.png"></image>
+          <picker class="r input-box" @change="changePicker('room_name','roomList')" range="{{roomList}}" range-key="{{'room_name'}}">
+            <view class="picker" wx:if="{{room_name}}">{{room_name}}</view>
+            <view class="picker" wx:else>门牌号</view>
+            <image class="arrow-icon" src="../images/arrow-bottom-icon.png"></image>
           </picker>
         </view>
         <view class="item-panel clearfix">
           <view class="l">阀门开度</view>
           <view class="r input-box">
-            <zy-slider minValue="{{low}}" maxValue="{{heigh}}" min="0" max="100" @lowValueChange="lowValueChangeAction"
+            <zy-slider minValue="{{valve_open_min}}" maxValue="{{valve_open_max}}" min="0" max="100" @lowValueChange="lowValueChangeAction"
                 @heighValueChange="heighValueChangeAction" />
-            <view class="des">{{low}}%-{{heigh}}%</view>
+            <view class="des">{{valve_open_min}}%-{{valve_open_max}}%</view>
           </view>
           </picker>
         </view>
         <view class="item-panel clearfix">
           <view class="l">缴费状态</view>
-          <picker class="r input-box" @change="changePicker('curCompanyIndex')" value="{{curCompanyIndex}}" range="{{companyList}}">
-            <view class="picker">{{companyList[curCompanyIndex]}}</view>
-          <image class="arrow-icon" src="../images/arrow-bottom-icon.png"></image>
+          <picker class="r input-box" @change="changePicker('payment_state','paymentList')" range="{{paymentList}}" range-key="{{'payment_state'}}">
+            <view class="picker" wx:if="{{payment_state}}">{{payment_state}}</view>
+            <view class="picker" wx:else>缴费状态</view>
+            <image class="arrow-icon" src="../images/arrow-bottom-icon.png"></image>
           </picker>
         </view>
         <view class="item-panel clearfix">
           <view class="l">故障状态</view>
-          <picker class="r input-box" @change="changePicker('curCompanyIndex')" value="{{curCompanyIndex}}" range="{{companyList}}">
-            <view class="picker">{{companyList[curCompanyIndex]}}</view>
+          <picker class="r input-box" @change="changePicker('falt_msg','faultList')" range="{{faultList}}" range-key="{{'falt_msg'}}">
+            <view class="picker" wx:if="{{falt_msg}}">{{falt_msg}}</view>
+            <view class="picker" wx:else>故障状态</view>
           <image class="arrow-icon" src="../images/arrow-bottom-icon.png"></image>
           </picker>
         </view>
         <view class="item-panel clearfix">
           <view class="l">电量状态</view>
-          <picker class="r input-box" @change="changePicker('curCompanyIndex')" value="{{curCompanyIndex}}" range="{{companyList}}">
-            <view class="picker">{{companyList[curCompanyIndex]}}</view>
+          <picker class="r input-box" @change="changePicker('battery_level','batteryList')" range="{{batteryList}}" range-key="{{'battery_level'}}">
+            <view class="picker" wx:if="{{battery_level}}">{{battery_level}}</view>
+            <view class="picker" wx:else>正常</view>
           <image class="arrow-icon" src="../images/arrow-bottom-icon.png"></image>
           </picker>
         </view>
@@ -319,13 +379,13 @@
           <view class='right-box'>
             <view class='name' @tap="navTo('/pages/detail?id={{item.meter_id}}')">
               {{item.village_name}}-{{item.building_name}}-{{item.room_name}}
-              <image wx:if="{{item.collection}}" src="../images/collection-icon.png" class="collection-icon" @tap.stop="handleColl({{index}})"></image>
-              <image wx:else src="../images/collection-active-icon.png" class="collection-icon" @tap.stop="handleColl({{index}})"></image>
+              <image wx:if="{{item.favorite_status == 1}}" src="../images/collection-active-icon.png" class="collection-icon" @tap.stop="handleColl({{index}},{{item.meter_id}})"></image>
+              <image wx:else src="../images/collection-icon.png" class="collection-icon" @tap.stop="handleColl({{index}},{{item.meter_id}})"></image>
             </view>
             <view class='bottom-box'>
               <view class="temperature item-img-box">
                 <image src="../images/temperature-icon.png"></image>
-                <view>3C</view>
+                <view>{{item.temp_return}}C</view>
               </view>
               <view class="fault item-img-box" wx:if="{{item.fault_message}}">
                 <image src="../images/fault-icon.png"></image>
@@ -333,13 +393,66 @@
               <view class="arrearage item-img-box" wx:if="{{item.payment_state == '未缴费'}}">
                 <image src="../images/arrearage-icon.png"></image>
               </view>
-              <!-- <view class="temperature item-img-box">
-                <picker class="item-picker" @change="changePickerDoor({{index}})" value="{{item.doorModelIndex}}" range="{{item.doorModel}}">
-                  <view class="picker">{{item.doorModel[item.doorModelIndex]}}</view>
+              <view class="temperature item-img-box">
+                <picker class="item-picker" @change="changePickerDoor({{item.meter_id}},{{index}})" value="{{doorModelIndex}}" range="{{doorModel}}" range-key="{{'name'}}">
+                  <view class="picker">{{item.valve_opening}}</view>
                 </picker>
-              </view> -->
+              </view>
             </view>
           </view>
+      </view>
+    </view>
+    <!-- 普通用户设备详情 -->
+    <view class="detail-box" wx:if="{{userInfo.is_super == 0}}">
+      <view class="item-msg">
+        <view class="name">安装位置:</view>
+        <view class="con">{{detailInfo.village_name}}-{{detailInfo.room_name}}</view>
+      </view>
+      <view class="item-msg">
+        <view class="name">设备 ID:</view>
+        <view class="con">{{detailInfo.meter_id}}</view>
+      </view>
+      <view class="item-msg">
+        <view class="name">回水温度:</view>
+        <view class="con">
+          {{detailInfo.temp_return}}’C
+          <image src="../images/temperature-icon.png"></image>
+        </view>
+      </view>
+      <view class="item-msg">
+        <view class="name">缴费状态:</view>
+        <view class="con">
+          {{detailInfo.payment_state}}
+          <image src="../images/arrearage-icon.png"></image>
+        </view>
+      </view>
+      <view class="item-msg">
+        <view class="name">故障状态:</view>
+        <view class="con">
+          {{detailInfo.fault_message}}
+          <image src="../images/fault-icon.png"></image>
+        </view>
+      </view>
+      <view class="item-msg">
+        <view class="name">电量状态:</view>
+        <view class="con">
+          {{detailInfo.battery_level}}
+          <view class="explain">100%</view>
+          <image src="../images/power-icon.png"></image>
+        </view>
+      </view>
+      <view class="item-msg">
+        <view class="name">阀门开度:</view>
+        <view class="con">{{detailInfo.valve_opening}}</view>
+      </view>
+      <view class="item-msg">
+        <view class="name">刷新时间:</view>
+        <view class="con">{{detailInfo.time_sample}}</view>
+      </view>
+      <!-- 刷新&&返回 -->
+      <view class="handle-bar">
+        <view>刷新</view>
+        <view>返回</view>
       </view>
     </view>
   </view>
@@ -360,90 +473,97 @@ export default class Home extends wepy.page {
 
   components = {}
   data = {
-    token: '',
-    valve_id:'',  // 阀门id
+    userInfo: '',
+    detailInfo: '',
+    valve_id: '', // 阀门id
+    page: 1,
+    isOk: true, // 重复请求
+    isFisrt: true, // 是否第一次
     villageList: '', // 小区列表
     village_name: '', // 小区名字
     buildingList: '', // 楼栋列表
     building_name: '', // 楼栋名字
     roomList: '', // 门牌号列表
     room_name: '', // 门牌号名字
-    storeyList: ['217', '218', '219'],
-    doorNumberList: ['1-101', '1-102', '2-101'],
-    houseEstateIndex: '1',
-    storeyIndex: '',
-    doorNumberIndex: '',
-    showSeniorSearchPop: false,
-    companyList: ['公司1', '公司名称2', '公司333'],
-    curCompanyIndex: '0', // 当前所选公司索引
-    low: 0,
-    heigh: 100,
-    a: {
-      id: '1',
-      house: '泰和小区-100号楼-2-201',
-      collection: false,
-      temperature: 33,
-      fault: false,
-      arrearage: false,
-      checked: false,
-      doorModel: [
-        '关阀',
-        '10%',
-        '20%',
-        '30%',
-        '40%',
-        '50%',
-        '60%',
-        '70%',
-        '80%',
-        '90%',
-        '100%'
-      ],
-      doorModelIndex: '0'
-    },
-    equipmentList: [
+    paymentList: [{ payment_state: '已交费' }, { payment_state: '未缴费' }], // 缴费列表
+    payment_state: '', // 缴费状态
+    batteryList: [{ battery_level: '正常' }, { battery_level: '非正常' }], // 电量列表
+    battery_level: '', // 电量状态
+    faultList: [{ falt_msg: '无故障' }, { falt_msg: '有故障' }], // 故障列表
+    falt_msg: '', // 故障状态
+    showSeniorSearchPop: true,
+    valve_open_min: 0,
+    valve_open_max: 100,
+    doorModel: [
       {
-        meter_id: '11114001004301 ',
-        model_id: '220',
-        village_name: '晋东三号院',
-        building_name: '16号楼',
-        room_name: '【16-03-25】3单元1F东户',
-        valve_opening: '0.00',
-        temp_return: '0.00',
-        battery_level: '0.00',
-        payment_state: '未缴费',
-        fault_message: '',
-        time_sample: '0000-00-00 00:00:00'
+        name:"关阀",
+        value:0
       },
       {
-        meter_id: '11114001004301 ',
-        model_id: '220',
-        village_name: '晋东三号院',
-        building_name: '16号楼',
-        room_name: '【16-03-25】3单元1F东户',
-        valve_opening: '0.00',
-        temp_return: '0.00',
-        battery_level: '0.00',
-        payment_state: '未缴费',
-        fault_message: '',
-        time_sample: '0000-00-00 00:00:00'
+        name:"10%",
+        value:10
+      },
+      {
+        name:"20%",
+        value:20
+      },
+      {
+        name:"30%",
+        value:30
+      },
+      {
+        name:"40%",
+        value:40
+      },
+      {
+        name:"50%",
+        value:50
+      },
+      {
+        name:"60%",
+        value:60
+      },
+      {
+        name:"70%",
+        value:70
+      },
+      {
+        name:"80%",
+        value:80
+      },
+      {
+        name:"90%",
+        value:90
+      },
+      {
+        name:"100%",
+        value:100
       }
-    ]
+    ],
+    doorModelIndex: '0',
+    equipmentList: []
   }
 
   onLoad(ops) {
     let that = this
-    let token = wepy.getStorageSync('token')
-    that.token = token || ''
-    wxRequest('/v1/enter-prise/list', {}).then(res => {
-      console.log(res)
-      if (res.code == 200 && res.data) {
-        that.companyList = res.data
-        that.$apply()
-        tip.loaded()
-      }
-    })
+    that.userInfo = wepy.getStorageSync('userInfo')
+    if (that.userInfo != 1) {
+      // 是普通用户
+      wxRequest('/v1/user/meter-info', {}).then(res => {
+        console.log(res)
+        if (res.code == 200 && res.data) {
+          that.detailInfo = res.data
+          that.$apply()
+          tip.loaded()
+        }
+      })
+    }
     that.getVillage()
+  }
+  onShow() {
+    let that = this
+    that.userInfo = wepy.getStorageSync('userInfo')
+    console.log('showshow')
   }
   async getVillage() {
     let that = this
@@ -460,10 +580,6 @@ export default class Home extends wepy.page {
   // 获取楼栋列表
   async getBuildingList() {
     let that = this
-    console.log(333)
-    setTimeout(() => {
-      console.log(that.village_name)
-    }, 2000)
     let params = {
       village_name: that.village_name
     }
@@ -508,37 +624,58 @@ export default class Home extends wepy.page {
       }
     })
   }
+  async search() {
+    let that = this
+    let params = {}
+    if (!that.isFisrt) {
+      that.page++
+    }
+    if (that.valve_id) {
+      params = {
+        valve_id: that.valve_id
+      }
+      wxRequest('/v1/user/search-id', params).then(res => {
+        console.log(res)
+        if (res.code == 200 && res.data) {
+          that.isFisrt = false
+          that.equipmentList = [...that.equipmentList, ...res.data.list]
+          that.$apply()
+          tip.loaded()
+        }
+      })
+    } else {
+      params = {
+        village_name: that.village_name,
+        building_name: that.building_name,
+        room_name: that.room_name,
+        valve_open_min:that.valve_open_min,
+        valve_open_max:that.valve_open_max,
+        payment_state:that.payment_state,
+        falt_msg:that.falt_msg,
+        battery_level:that.battery_level,
+        page: that.page
+      }
+      wxRequest('/v1/user/search-detail', params).then(res => {
+        console.log(res)
+        if (res.code == 200 && res.data) {
+          that.isFisrt = false
+          that.equipmentList = [...that.equipmentList, ...res.data.list]
+          that.$apply()
+          tip.loaded()
+        }
+      })
+    }
+    that.$apply()
+  }
   computed = {}
   methods = {
     goSearch() {
-      tip.loading()
       let that = this
-      let params = {}
-      if (that.valve_id) {
-        params.valve_id = that.valve_id
-        wxRequest('/v1/user/search-id', params).then(res => {
-          console.log(res)
-          if (res.code == 200 && res.data) {
-            that.equipmentList = res.data[1]
-            that.$apply()
-            tip.loaded()
-          }
-        })
-      } else {
-        params = {
-          village_name: that.village_name,
-          building_name: that.building_name,
-          room_name: that.room_name
-        }
-        wxRequest('/v1/user/search-detail', params).then(res => {
-          console.log(res)
-          if (res.code == 200 && res.data) {
-            that.equipmentList = res.data[1]
-            that.$apply()
-            tip.loaded()
-          }
-        })
-      }
+      that.page = 1
+      that.isFisrt = true
+      that.equipmentList = []
+      that.showBottomText = false
+      that.search()
     },
     goFillInInfo(type) {
       // 选择身份进行登录
@@ -546,7 +683,7 @@ export default class Home extends wepy.page {
       utils.navigateTo(`/pages/userLogin?id=${type}`)
     },
     inputValueing(type, e) {
-      console.log(111);
+      console.log(111)
 
       this[type] = e.detail.value
     },
@@ -570,32 +707,52 @@ export default class Home extends wepy.page {
       this.showSeniorSearchPop = !this.showSeniorSearchPop
     },
     lowValueChangeAction: function(e) {
-      this.low = e.detail.lowValue
+      this.valve_open_min = e.detail.lowValue
       this.$apply()
     },
 
     heighValueChangeAction: function(e) {
-      this.heigh = e.detail.heighValue
+      this.valve_open_max = e.detail.heighValue
       this.$apply()
     },
     // 操作收藏
-    handleColl(index) {
+    handleColl(index, id) {
       let that = this
-      that.equipmentList[index].collection = !that.equipmentList[index]
-        .collection
+      let params = {
+        valve_id: id
+      }
+      wxRequest('/v1/user/favorite', params).then(res => {
+        console.log(res)
+        if (res.code == 200) {
+          that.equipmentList[index].favorite_status =
+            that.equipmentList[index].favorite_status == 1 ? 2 : 1
+          that.$apply()
+        }
+      })
       that.$apply()
     },
     // 操作list的单个阀门
-    changePickerDoor(index, e) {
+    changePickerDoor(id, index, e) {
       let that = this
       tip.loading('同步阀门信息')
-      that.equipmentList[index].doorModelIndex = e.detail.value
-      that.$apply()
+      console.log(index)
+      console.log(e)
+      let params = {
+        valve_id: id,
+        valve_status: that.doorModel[e.detail.value].value
+      }
+      wxRequest('/v1/user/close-valve', params).then(res => {
+        console.log(res)
+        if (res.code == 200) {
+          that.equipmentList[index].valve_opening =
+            that.doorModel[e.detail.value].name
+          that.$apply()
+        }
+      })
       tip.loaded()
     },
     navTo(url) {
       console.log(url)
-
       utils.navigateTo(url)
     }
   }
@@ -603,6 +760,18 @@ export default class Home extends wepy.page {
   //加载更多
   onReachBottom() {
     let that = this
+    // if (!that.hasMore) {
+    //   that.showLoading = false
+    //   that.showBottomText = true
+    //   return
+    // }
+    // if (!that.isOk) {
+    //   return
+    // }
+    // that.showLoading = true
+    // that.isOk = false
+    that.search()
+    that.$apply()
   }
 }
 </script>

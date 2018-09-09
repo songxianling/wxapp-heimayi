@@ -53,18 +53,21 @@
 </style>
 <template>
   <view class="history-page-box">
-    <view class="history-list">
+    <view class="history-list" wx:if="{{userInfo.is_super == 1}}">
       <view class='item flex_center' wx:for="{{equipmentList}}" wx:key="{{index}}" data-id="{{index}}" @tap='select'>
           <!-- 实际内容 -->
           <view class='right-box'>
-            <view class='name'>{{item.house}}</view>
+            <view class='name'>{{item.village_name}}-{{item.building_name}}-{{item.room_name}}</view>
             <view class='bottom-box'>
-              <view class="temperature item-img-box">老李</view>
-              <view class="fault item-img-box">调节至70%</view>
-              <view class="arrearage item-img-box">2018-7-10 22:20:59</view>
+              <view class="temperature item-img-box">{{item.operator_name}}</view>
+              <view class="fault item-img-box">调节至{{item.time}}%</view>
+              <view class="arrearage item-img-box">{{item.time}}</view>
             </view>
           </view>
       </view>
+    </view>
+    <view wx:else>
+      您当前没有权限查看该列表
     </view>
   </view>
 </template>
@@ -74,150 +77,43 @@ import { wxRequest } from '../utils/wxRequest'
 import tip from '../utils/tip'
 import utils from '../utils/util'
 
-export default class Home extends wepy.page {
+export default class History extends wepy.page {
   config = {
     navigationBarTitleText: '历史记录'
   }
   components = {}
   data = {
-    equipmentList: [
-      {
-        id: '1',
-        house:'泰和小区-100号楼-2-201',
-        collection: false,
-        temperature: 33,
-        fault: false,
-        arrearage: false,
-        doorModel: [
-          '关阀',
-          '10%',
-          '20%',
-          '30%',
-          '40%',
-          '50%',
-          '60%',
-          '70%',
-          '80%',
-          '90%',
-          '100%'
-        ],
-        doorModelIndex: '0'
-      },
-      {
-        id: '2',
-        house:'东方小区-003号楼-1-701',
-        collection: true,
-        temperature: 13,
-        fault: true,
-        arrearage: false,
-        doorModel: [
-          '关阀',
-          '10%',
-          '20%',
-          '30%',
-          '40%',
-          '50%',
-          '60%',
-          '70%',
-          '80%',
-          '90%',
-          '100%'
-        ],
-        doorModelIndex: '0'
-      },
-      {
-        id: '3',
-        house:'胜利家园-5号楼-101',
-        collection: false,
-        temperature: 53,
-        fault: true,
-        arrearage: true,
-        doorModel: [
-          '关阀',
-          '10%',
-          '20%',
-          '30%',
-          '40%',
-          '50%',
-          '60%',
-          '70%',
-          '80%',
-          '90%',
-          '100%'
-        ],
-        doorModelIndex: '9'
-      },
-      {
-        id: '4',
-        house:'晨光家园-111号楼-1-2201',
-        collection: true,
-        temperature: 22,
-        fault: false,
-        arrearage: true,
-        doorModel: [
-          '关阀',
-          '10%',
-          '20%',
-          '30%',
-          '40%',
-          '50%',
-          '60%',
-          '70%',
-          '80%',
-          '90%',
-          '100%'
-        ],
-        doorModelIndex: '6'
-      },
-      {
-        id: '5',
-        house:'温都水城-100号楼-2-201',
-        collection: true,
-        temperature: 77,
-        fault: true,
-        arrearage: true,
-        doorModel: [
-          '关阀',
-          '10%',
-          '20%',
-          '30%',
-          '40%',
-          '50%',
-          '60%',
-          '70%',
-          '80%',
-          '90%',
-          '100%'
-        ],
-        doorModelIndex: '7'
-      },
-      {
-        id: '6',
-        house:'天之南理-3号楼-101',
-        collection: false,
-        temperature: 3,
-        fault: true,
-        arrearage: false,
-        doorModel: [
-          '关阀',
-          '10%',
-          '20%',
-          '30%',
-          '40%',
-          '50%',
-          '60%',
-          '70%',
-          '80%',
-          '90%',
-          '100%'
-        ],
-        doorModelIndex: '3'
-      }
-    ]
+    userInfo:'',
+    page: 1,
+    isOk: true, // 重复请求
+    isFisrt: true, // 是否第一次
+    equipmentList: []
   }
 
   onLoad(ops) {
     let that = this
+    that.userInfo = wepy.getStorageSync('userInfo')
+    that.getList()
+  }
+  // 获取历史列表
+  async getList() {
+    let that = this
+    if (!that.isFisrt) {
+      that.page++
+    }
+    let params = {
+      page: that.page,
+      pageSize: 10
+    }
+    wxRequest('/v1/user/history-list', params).then(res => {
+      console.log(res)
+      if (res.code == 200 && res.data) {
+        that.isFisrt = false
+        that.equipmentList = [...that.equipmentList, ...res.data.list]
+        that.$apply()
+        tip.loaded()
+      }
+    })
   }
 
   computed = {}
@@ -232,6 +128,8 @@ export default class Home extends wepy.page {
   //加载更多
   onReachBottom() {
     let that = this
+    that.getHistoryList()
+    that.$apply()
   }
 }
 </script>

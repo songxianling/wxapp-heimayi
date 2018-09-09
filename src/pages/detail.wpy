@@ -26,7 +26,7 @@
       box-sizing: border-box;
       background: #fff;
       color: #333;
-      .explain{
+      .explain {
         position: absolute;
         top: 0;
         right: 70rpx;
@@ -51,48 +51,48 @@
   <view class="detail-page-box">
     <view class="item-msg">
       <view class="name">安装位置:</view>
-      <view class="con">泰和小区--1号楼-1-101</view>
+      <view class="con">{{detailInfo.village_name}}-{{detailInfo.room_name}}</view>
     </view>
     <view class="item-msg">
       <view class="name">设备 ID:</view>
-      <view class="con">33333333333333</view>
+      <view class="con">{{detailInfo.meter_id}}</view>
     </view>
     <view class="item-msg">
       <view class="name">回水温度:</view>
       <view class="con">
-        25’C
+        {{detailInfo.temp_return}}’C
         <image src="../images/temperature-icon.png"></image>
       </view>
     </view>
     <view class="item-msg">
       <view class="name">缴费状态:</view>
       <view class="con">
-        已缴费
+        {{detailInfo.payment_state}}
         <image src="../images/arrearage-icon.png"></image>
       </view>
     </view>
     <view class="item-msg">
       <view class="name">故障状态:</view>
       <view class="con">
-        无
+        {{detailInfo.fault_message}}
         <image src="../images/fault-icon.png"></image>
       </view>
     </view>
     <view class="item-msg">
       <view class="name">电量状态:</view>
       <view class="con">
-        正常
+        {{detailInfo.battery_level}}
         <view class="explain">100%</view>
         <image src="../images/power-icon.png"></image>
       </view>
     </view>
     <view class="item-msg">
       <view class="name">阀门开度:</view>
-      <view class="con">70%</view>
+      <view class="con">{{detailInfo.valve_opening}}</view>
     </view>
     <view class="item-msg">
       <view class="name">刷新时间:</view>
-      <view class="con">2018-7-10 22:31:59</view>
+      <view class="con">{{detailInfo.time_sample}}</view>
     </view>
   </view>
 </template>
@@ -104,24 +104,33 @@ import utils from '../utils/util'
 
 export default class Detail extends wepy.page {
   config = {
-    navigationBarTitleText: '设备详情'
+    navigationBarTitleText: '设备详情',
+
   }
   components = {}
-  data = {}
+  data = {
+    detailInfo: ''
+  }
 
   onLoad(options) {
     let that = this
-    console.log(options.id);
-
+    tip.loading()
+    console.log(options.id)
+    wxRequest('/v1/user/meter-info', {valve_id:options.id}).then(res => {
+      console.log(res)
+      if (res.code == 200 && res.data) {
+        that.isFisrt = false
+        that.detailInfo = res.data
+        that.$apply()
+        tip.loaded()
+      }else{
+        tip.loaded()
+      }
+    })
   }
 
   computed = {}
   methods = {
-    bindRegionChange: e => {
-      console.log('picker发送选择改变，携带值为', e.detail.value)
-      this.region = e.detail.value
-      this.$apply()
-    }
   }
   events = {}
   //加载更多
