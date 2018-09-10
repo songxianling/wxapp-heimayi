@@ -487,7 +487,7 @@ export default class Home extends wepy.page {
     room_name: '', // 门牌号名字
     paymentList: [{ payment_state: '已交费' }, { payment_state: '未缴费' }], // 缴费列表
     payment_state: '', // 缴费状态
-    batteryList: [{ battery_level: '正常' }, { battery_level: '非正常' }], // 电量列表
+    batteryList: [{ battery_level: '正常' }, { battery_level: '欠压' }], // 电量列表
     battery_level: '', // 电量状态
     faultList: [{ falt_msg: '无故障' }, { falt_msg: '有故障' }], // 故障列表
     falt_msg: '', // 故障状态

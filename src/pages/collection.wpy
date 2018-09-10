@@ -280,7 +280,7 @@ export default class Collection extends wepy.page {
   onLoad(ops) {
     let that = this
     that.userInfo = wepy.getStorageSync('userInfo')
-    that.getList()
+    // that.getList()
   }
   onShow() {
     let that = this
