@@ -491,7 +491,7 @@ export default class Home extends wepy.page {
     battery_level: '', // 电量状态
     faultList: [{ falt_msg: '无故障' }, { falt_msg: '有故障' }], // 故障列表
     falt_msg: '', // 故障状态
-    showSeniorSearchPop: true,
+    showSeniorSearchPop: false,
     valve_open_min: 0,
     valve_open_max: 100,
     doorModel: [
